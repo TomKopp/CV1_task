@@ -10,7 +10,7 @@
 using namespace cv;
 using namespace std;
 
-Mat ImgOrig, ImgGray;
+Mat ImgOrig, ImgGray, ImgRes;
 Point StartPoint = {-1, -1};
 Point EndPoint = {-1, -1};
 
@@ -38,8 +38,31 @@ static Mat convertImgToGray(Mat& ImgOrig) {
   return ImgGray;
 }
 
+static Mat convertImgToBGR(Mat& ImgOrig) {
+  Mat Img;
+
+  Img = ImgOrig.clone();
+  cvtColor(Img, Img, COLOR_GRAY2BGR);
+
+  return Img;
+}
+
 static int getHueDistance(Mat& Img, Point A, Point B) {
   uchar A_val, B_val, deltaHue;
+
+  if (
+    (A.x < 0
+    || A.y < 0
+    || A.x > Img.cols -1
+    || A.y > Img.rows -1)
+    ||
+    (B.x < 0
+    || B.y < 0
+    || B.x > Img.cols -1
+    || B.y > Img.rows -1)
+  ) {
+    return INT_MAX;
+  }
 
   A_val = Img.at<uchar>(A);
   B_val = Img.at<uchar>(B);
@@ -150,8 +173,16 @@ static Point getNextPix(Mat& Img, Point P, Point Last) {
 
   // find point with minimal hue distance
   PointHueDistance ret = *min_element(adjacentPix.begin(), _end, cmpPointHueDistance);
-  cout << ret.p << endl << ret.dHue << endl << endl;
   return ret.p;
+}
+
+static void drawPathBGR(Mat Img, Vertices Path, uchar blue = 0, uchar green = 0, uchar red = 0) {
+  auto _begin = Path.begin(), _end = Path.end();
+  while (_begin != _end) {
+    Point& item = *_begin;
+    ++_begin;
+    Img.at<Vec3b>(item) = Vec3b(blue, green, red);
+  }
 }
 
 static void onMouse(int event, int x, int y, int, void* PointsList) {
@@ -171,15 +202,17 @@ static void onMouse(int event, int x, int y, int, void* PointsList) {
   // second click sets EndPoint and...
   if (EndPoint == Point(-1, -1)) {
     EndPoint = Point(x, y);
-    return;
+    //return;
   }
+
   // runs the path discovery - builds a list of Point's that define the path
   while (List->back() != EndPoint) {
     List->push_back(getNextPix(ImgGray, List->back(), *(List->end() -2) ));
   }
 
   // Print the path in the image
-  //imshow("Output", *bla);
+  drawPathBGR(ImgRes, *List, 0, 255);
+  imshow("Result", ImgRes);
 }
 
 
@@ -203,9 +236,11 @@ int main(int argc, char** argv) {
   // Convert given image to gray edge image
   //Mat ImgEdge = convertImgToEdge(ImgOrig);
   ImgGray = convertImgToGray(ImgOrig);
+  ImgRes = convertImgToBGR(ImgGray);
 
   // Create a window for display
   namedWindow("Output");
+  namedWindow("Result");
   // Listen to mouse events
   setMouseCallback("Output", onMouse, &PointsList);
   // Display imge in window
