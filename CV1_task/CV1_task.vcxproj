@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0298A7D2-A217-4EBC-A8CB-1DD7045BFC3D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CV1_task</RootNamespace>
+    <RootNamespace>CV1_task1</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>CV1_task1</ProjectName>
   </PropertyGroup>

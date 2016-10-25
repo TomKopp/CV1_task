@@ -10,6 +10,9 @@
 using namespace cv;
 using namespace std;
 
+Point StartPoint = {10, 10};
+Point EndPoint = {10, 5};
+
 
 struct PointHueDistance
 {
@@ -47,25 +50,104 @@ static int getHueDistance(Mat& Img, Point A, Point B) {
   return (int)deltaHue;
 }
 
-static Point getNextPix(Mat& Img, Point p) {
+static Point getNextPix(Mat& Img, Point p, Point last) {
   // all adjacent points with initial hue distance
-  PointsHueDistance adjacentPix = {
-    { Point(p.x - 1, p.y - 1), INT_MAX },{ Point(p.x, p.y - 1), INT_MAX },{ Point(p.x + 1, p.y - 1), INT_MAX },
-    { Point(p.x - 1, p.y), INT_MAX },{ Point(p.x + 1, p.y), INT_MAX },
-    { Point(p.x - 1, p.y + 1), INT_MAX },{ Point(p.x, p.y + 1), INT_MAX },{ Point(p.x + 1, p.y + 1), INT_MAX }
-  };
+  //PointsHueDistance adjacentPix = {
+  //  { Point(p.x - 1, p.y - 1), INT_MAX },{ Point(p.x, p.y - 1), INT_MAX },{ Point(p.x + 1, p.y - 1), INT_MAX },
+  //  { Point(p.x - 1, p.y), INT_MAX },{ Point(p.x + 1, p.y), INT_MAX },
+  //  { Point(p.x - 1, p.y + 1), INT_MAX },{ Point(p.x, p.y + 1), INT_MAX },{ Point(p.x + 1, p.y + 1), INT_MAX }
+  //};
+
+  PointsHueDistance adjacentPix;
+  int dx = p.x - EndPoint.x;
+  int dy = p.y - EndPoint.y;
+
+  if (dx < 0)
+  {
+    if (dy < 0)
+    {
+      adjacentPix.push_back({ Point(p.x + 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y + 1), INT_MAX });
+    }
+    if (dy > 0)
+    {
+      adjacentPix.push_back({ Point(p.x - 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y + 1), INT_MAX });
+    }
+    if (dy == 0)
+    {
+      adjacentPix.push_back({ Point(p.x, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y + 1), INT_MAX });
+    }
+  }
+  if (dx > 0)
+  {
+    if (dy < 0)
+    {
+      adjacentPix.push_back({ Point(p.x - 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y + 1), INT_MAX });
+    }
+    if (dy > 0)
+    {
+      adjacentPix.push_back({ Point(p.x - 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y + 1), INT_MAX });
+    }
+    if (dy == 0)
+    {
+      adjacentPix.push_back({ Point(p.x, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y + 1), INT_MAX });
+    }
+  }
+  if (dx == 0)
+  {
+    if (dy < 0)
+    {
+      adjacentPix.push_back({ Point(p.x - 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y + 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y), INT_MAX });
+    }
+    if (dy > 0)
+    {
+      adjacentPix.push_back({ Point(p.x - 1, p.y), INT_MAX });
+      adjacentPix.push_back({ Point(p.x - 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y - 1), INT_MAX });
+      adjacentPix.push_back({ Point(p.x + 1, p.y), INT_MAX });
+    }
+  }
 
   // loop through adjacent pixels and update their hue distance
   auto _begin = adjacentPix.begin(), _end = adjacentPix.end();
   while (_begin != _end) {
     PointHueDistance& item = *_begin;
-    item.dHue = getHueDistance(Img, p, item.p);
     ++_begin;
+    if (item.p == last) continue;
+    item.dHue = getHueDistance(Img, p, item.p);
   }
 
   // find point with minimal hue distance
   PointHueDistance ret = *min_element(adjacentPix.begin(), _end, cmpPointHueDistance);
-
+  cout << ret.p << endl << ret.dHue << endl << endl;
   return ret.p;
 }
 
@@ -93,7 +175,7 @@ static Point getNextPix(Mat& Img, Point p) {
 
 int main(int argc, char** argv) {
   Mat ImgOrig;
-  Point start = {1, 1};
+  //Point start = {1, 1};
 
   // Check if image path is supplied as argument
   if (argc < 2) {
@@ -120,7 +202,17 @@ int main(int argc, char** argv) {
   imshow("Output", ImgEdge);
   //imshow("Output", ImgOrig);
 
-  getNextPix(ImgEdge, start);
+  Point temp = StartPoint;
+  Point last = StartPoint;
+  while (
+    (temp.x - EndPoint.x) != 0
+    || (temp.y - EndPoint.y) != 0
+  ) {
+    Point x = getNextPix(ImgEdge, temp, last);
+    last = temp;
+    temp = x;
+  }
+  
 
   // Wait for a keystroke in the window
   waitKey();
