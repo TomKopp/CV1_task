@@ -10,7 +10,7 @@
 using namespace cv;
 using namespace std;
 
-Mat ImgOrig, ImgEdge;
+Mat ImgOrig, ImgGray;
 Point StartPoint = {-1, -1};
 Point EndPoint = {-1, -1};
 
@@ -175,31 +175,17 @@ static void onMouse(int event, int x, int y, int, void* PointsList) {
   }
   // runs the path discovery - builds a list of Point's that define the path
   while (List->back() != EndPoint) {
-    List->push_back(getNextPix(ImgEdge, List->back(), *(List->end() -2) ));
+    List->push_back(getNextPix(ImgGray, List->back(), *(List->end() -2) ));
   }
 
   // Print the path in the image
-
-  /*Mat* bla = (Mat*)Img;
-  int weight;
-  Point blab = Point(x, y);
-  bla->at<Vec3b>(y, x) = Vec3b(0, 0, 255);
-
-  weight = getHueDistance(*bla, Point(x, y), Point(x, y + 1));
-
-  cout << Point(x, y) << endl
-    << Point(x, y + 1) << endl
-    << weight << endl;
-
-  imshow("Output", *bla);*/
-  //updateWindow("Output"); // add openGL to system
+  //imshow("Output", *bla);
 }
 
 
 
 int main(int argc, char** argv) {
   Vertices PointsList = {};
-  //Point start = {1, 1};
 
   // Check if image path is supplied as argument
   if (argc < 2) {
@@ -207,7 +193,7 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  // Read image and check if successfull
+  // Read image and check if successful
   ImgOrig = imread(argv[1]);
   if (ImgOrig.empty()) {
     cout << "Could not open or find the image." << endl;
@@ -216,14 +202,14 @@ int main(int argc, char** argv) {
 
   // Convert given image to gray edge image
   //Mat ImgEdge = convertImgToEdge(ImgOrig);
-  ImgEdge = convertImgToGray(ImgOrig);
+  ImgGray = convertImgToGray(ImgOrig);
 
   // Create a window for display
   namedWindow("Output");
   // Listen to mouse events
   setMouseCallback("Output", onMouse, &PointsList);
   // Display imge in window
-  imshow("Output", ImgEdge);
+  imshow("Output", ImgGray);
   //imshow("Output", ImgOrig);
   
 
