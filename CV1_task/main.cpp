@@ -29,7 +29,7 @@ static bool cmpPointHueDistance(PointHueDistance A, PointHueDistance B) {
   return A.dHue < B.dHue;
 }
 
-static Mat convertImgToGray(Mat& ImgOrig) {
+static Mat convertImgToGray(const Mat& ImgOrig) {
   Mat ImgGray;
 
   ImgGray = ImgOrig.clone();
@@ -38,7 +38,7 @@ static Mat convertImgToGray(Mat& ImgOrig) {
   return ImgGray;
 }
 
-static Mat convertImgToBGR(Mat& ImgOrig) {
+static Mat convertImgToBGR(const Mat& ImgOrig) {
   Mat Img;
 
   Img = ImgOrig.clone();
@@ -47,7 +47,7 @@ static Mat convertImgToBGR(Mat& ImgOrig) {
   return Img;
 }
 
-static int getHueDistance(Mat& Img, Point A, Point B) {
+static int getHueDistance(const Mat& Img, Point A, Point B) {
   uchar A_val, B_val, deltaHue;
 
   // ckeck if Points are within Mat, else the hue distance is huge
@@ -78,7 +78,7 @@ static int getHueDistance(Mat& Img, Point A, Point B) {
   return (int)deltaHue;
 }
 
-static Point getNextPix(Mat& Img, Vertices& List, Point P) {
+static Point getNextPix(const Mat& Img, const Vertices& List, Point P) {
   // all adjacent points with initial hue distance
   //PointsHueDistance adjacentPix = {
   //  { Point(p.x - 1, p.y - 1), INT_MAX },{ Point(p.x, p.y - 1), INT_MAX },{ Point(p.x + 1, p.y - 1), INT_MAX },
