@@ -61,10 +61,6 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   int nCols = (Img.cols - 1) * Img.channels();
   int i,
     j,
-    val_nw,
-    val_ne,
-    val_se,
-    val_sw,
     val_col_left,
     val_col_right,
     result;
@@ -90,24 +86,18 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
     blubber.clear();
 
     for (j = 1; j < nCols; ++j) {
-      uint val_e = row[j + 1],
-        val_w = row[j - 1];
-      val_nw = row_prev[j - 1];
-      val_ne = row_prev[j + 1];
-      val_se = row_next[j + 1];
-      val_sw = row_next[j - 1];
-      val_col_right = val_ne + (val_e << 1) + val_se;
       if (blubber.size() < 2) {
-        val_col_left = val_nw + (val_w << 1) + val_sw;
+        val_col_left = row_prev[j - 1] + ((uint)row[j - 1] << 1) + row_next[j - 1];
       }
       else {
         val_col_left = blubber.front();
         blubber.pop_front();
       }
 
-      blubber.push_back(val_col_right);
+      val_col_right = row_prev[j + 1] + ((uint)row[j + 1] << 1) + row_next[j + 1];
       result = val_col_right - val_col_left;
       
+      blubber.push_back(val_col_right);
       row_res[j] = cv::saturate_cast<uchar>(result);
     }
   }
