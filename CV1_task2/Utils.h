@@ -50,4 +50,6 @@ public:
   /// <param name="Color">The color.</param>
   static void drawPointInMat(cv::Mat& Img, const cv::Point& Pnt, const cv::Vec3b& Color);
   static void drawPointInMat(cv::Mat& Img, const cv::Point& Pnt, uchar Color);
+
+  static cv::Mat convolveMatWithSobel(const cv::Mat& Img);
 };

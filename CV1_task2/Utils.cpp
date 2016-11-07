@@ -1,5 +1,8 @@
 #include "Utils.h"
 
+#include <iostream>
+
+#include <list>
 #include <opencv2/imgproc/imgproc.hpp>
 
 
@@ -46,5 +49,69 @@ void Utils::drawPointInMat(cv::Mat & Img, const cv::Point & Pnt, const cv::Vec3b
 void Utils::drawPointInMat(cv::Mat & Img, const cv::Point & Pnt, uchar Color)
 {
   Img.at<cv::Vec3b>(Pnt) = cv::Vec3b(Color, Color, Color);
+}
+
+cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
+{
+  // Accept only char type matrices
+  CV_Assert(Img.depth() == CV_8U);
+
+  cv::Mat Res;
+  int nRows = Img.rows - 1;
+  int nCols = (Img.cols - 1) * Img.channels();
+  int i,
+    j,
+    val_nw,
+    val_ne,
+    val_se,
+    val_sw,
+    val_col_left,
+    val_col_right,
+    result;
+  const uchar *row,
+    *row_prev,
+    *row_next;
+  uchar *row_res;
+  std::list<int> blubber;
+
+  //if (Img.isContinuous()) {
+  //  nCols *= nRows;
+  //  nRows = 1;
+  //}
+
+  Res.create(Img.size(), Img.type());
+  Res = cv::Scalar::all(0);
+
+  for (i = 1; i < nRows; ++i) {
+    row_prev = Img.ptr<uchar>(i-1);
+    row = Img.ptr<uchar>(i);
+    row_res = Res.ptr<uchar>(i);
+    row_next = Img.ptr<uchar>(i+1);
+    blubber.clear();
+
+    for (j = 1; j < nCols; ++j) {
+      uint val_e = row[j + 1],
+        val_w = row[j - 1];
+      val_nw = row_prev[j - 1];
+      val_ne = row_prev[j + 1];
+      val_se = row_next[j + 1];
+      val_sw = row_next[j - 1];
+      val_col_right = val_ne + (val_e << 1) + val_se;
+      if (blubber.size() < 2) {
+        val_col_left = val_nw + (val_w << 1) + val_sw;
+      }
+      else {
+        val_col_left = blubber.front();
+        blubber.pop_front();
+      }
+
+      blubber.push_back(val_col_right);
+      result = val_col_right - val_col_left;
+      
+      row_res[j] = cv::saturate_cast<uchar>(result);
+    }
+  }
+
+  return Res;
 }
 
