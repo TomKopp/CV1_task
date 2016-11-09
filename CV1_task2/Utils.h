@@ -51,5 +51,17 @@ public:
   static void drawPointInMat(cv::Mat& Img, const cv::Point& Pnt, const cv::Vec3b& Color);
   static void drawPointInMat(cv::Mat& Img, const cv::Point& Pnt, uchar Color);
 
+  /// <summary>
+  /// Convolves the mat with sobel.
+  /// </summary>
+  /// <param name="Img">The img.</param>
+  /// <returns>cv::Mat</returns>
   static cv::Mat convolveMatWithSobel(const cv::Mat& Img);
+
+  /// <summary>
+  /// Convolves the mat with exponentional mask for 1D.
+  /// </summary>
+  /// <param name="Img">The img.</param>
+  /// <returns>cv::Mat</returns>
+  static cv::Mat convolveMatWithExpMask1D(const cv::Mat & Img);
 };

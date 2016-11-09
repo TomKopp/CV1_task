@@ -22,7 +22,7 @@ static cv::Mat applySobel(const cv::Mat& Img) {
 
 
 int main(int argc, char** argv) {
-  cv::Mat ImgOrig, ImgResult;
+  cv::Mat ImgOrig, ImgResult, ImgExpMask;
 
   // Check if image path is supplied as argument
   if (argc < 2) {
@@ -38,14 +38,26 @@ int main(int argc, char** argv) {
   }
 
   ImgResult = Utils::convertImgToGray(ImgOrig);
+  ImgExpMask = cv::Mat(1, 500, CV_8U);
+
+  // Initalize ImgExpMask with random values
+  for (int i = 0; i < ImgExpMask.total(); i++) {
+    int val_random = rand() % 255;
+    ImgExpMask.at<uchar>(i) = cv::saturate_cast<uchar>(val_random);
+  }
+
 
   // Create a windows for display
   cv::namedWindow("Original");
-  cv::namedWindow("Result");
+  cv::namedWindow("Sobel");
+  cv::namedWindow("ExpMaskOrig");
+  cv::namedWindow("ExpMask");
 
   // Display Images
   cv::imshow("Original", ImgOrig);
-  cv::imshow("Result", Utils::convolveMatWithSobel(ImgResult));
+  cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
+  cv::imshow("ExpMaskOrig", ImgExpMask);
+  cv::imshow("ExpMask", Utils::convolveMatWithExpMask1D(ImgExpMask));
 
   cv::waitKey();
   return 0;
