@@ -120,7 +120,7 @@ cv::Mat Utils::convolveMatWithExpMask1D(const cv::Mat & Img)
 
   for (int i = 1; i < Img.total(); i++) {
     // Calculate new value for every pixel by using the value of the previous pixel
-    double value = tau * Res.at<uchar>(i - 1) + tau* Img.at<uchar>(i);
+    double value = tau * ( Res.at<uchar>(i - 1) + Img.at<uchar>(i) );
 
     // Write result value to the result image
     Res.at<uchar>(i) = cv::saturate_cast<uchar>(value);
