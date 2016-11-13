@@ -56,8 +56,8 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   cv::Mat Res, PreComputed = cv::Mat_<int>(Img.size());
   const int row_count = Img.rows - 1;
   const int col_count = (Img.cols - 1) * Img.channels();
-  int i,
-    j,
+  int r,
+    c,
     val_col_left,
     val_col_right,
     val_result;
@@ -72,40 +72,33 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   Res = cv::Scalar::all(0);
   PreComputed = cv::Scalar::all(INT_MAX);
 
-  for (i = 1; i < row_count; ++i) {
+  for (r = 1; r < row_count; ++r) {
     // Get pointer to rows
-    row_prev = Img.ptr<uchar>(i - 1);
-    row_cur = Img.ptr<uchar>(i);
-    row_res = Res.ptr<uchar>(i);
-    row_next = Img.ptr<uchar>(i + 1);
+    row_prev = Img.ptr<uchar>(r - 1);
+    row_cur = Img.ptr<uchar>(r);
+    row_res = Res.ptr<uchar>(r);
+    row_next = Img.ptr<uchar>(r + 1);
 
-    for (j = 1; j < col_count; ++j) {
-      nw = cv::Point(j - 1, i - 1);
-      ne = cv::Point(j + 1, i - 1);
-      se = cv::Point(j + 1, i + 1);
-      sw = cv::Point(j - 1, i + 1);
+    for (c = 1; c < col_count; ++c) {
+      nw = cv::Point(c - 1, r - 1);
+      ne = cv::Point(c + 1, r - 1);
+      se = cv::Point(c + 1, r + 1);
+      sw = cv::Point(c - 1, r + 1);
       // Calculate value of the left operator column if there are no previously created ones.
-      // NW
       if (PreComputed.at<int>(nw) == INT_MAX)
-        PreComputed.at<int>(nw) = row_prev[j - 1] + row_cur[j - 1];
-      // NE
+        PreComputed.at<int>(nw) = row_prev[c - 1] + row_cur[c - 1];
       if (PreComputed.at<int>(ne) == INT_MAX)
-        PreComputed.at<int>(ne) = row_prev[j + 1] + row_cur[j + 1];
-      // SE
+        PreComputed.at<int>(ne) = row_prev[c + 1] + row_cur[c + 1];
       if (PreComputed.at<int>(se) == INT_MAX)
-        PreComputed.at<int>(se) = row_next[j + 1] + row_cur[j + 1];
-      // SW
+        PreComputed.at<int>(se) = row_next[c + 1] + row_cur[c + 1];
       if (PreComputed.at<int>(sw) == INT_MAX)
-        PreComputed.at<int>(sw) = row_next[j - 1] + row_cur[j - 1];
-
-
-      // Always calculate the right column; [j +- 1] are the adjacent pixels
+        PreComputed.at<int>(sw) = row_next[c - 1] + row_cur[c - 1];
 
       // Calculate the result value
       val_result = PreComputed.at<int>(ne) + PreComputed.at<int>(se) - PreComputed.at<int>(nw) - PreComputed.at<int>(sw);
 
       // Write result value to the result image
-      row_res[j] = cv::saturate_cast<uchar>(val_result);
+      row_res[c] = cv::saturate_cast<uchar>(val_result);
     }
   }
 
