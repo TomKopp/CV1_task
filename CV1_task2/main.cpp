@@ -5,7 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "Utils.h"
-
+#include "HarrisDetector.h"
 
 
 static cv::Mat applySobel(const cv::Mat& Img) {
@@ -19,10 +19,18 @@ static cv::Mat applySobel(const cv::Mat& Img) {
   return Res;
 }
 
+static bool cmpFnk(float flubber) {
+  return flubber > 10000;
+}
+
 
 
 int main(int argc, char** argv) {
-  cv::Mat ImgOrig, ImgResult, ImgExpMask;
+  cv::Mat ImgOrig
+    , ImgResult
+    , ImgExpMask
+    , ImgHarris;
+  
 
   // Check if image path is supplied as argument
   if (argc < 2) {
@@ -37,27 +45,31 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  ImgResult = Utils::convertImgToGray(ImgOrig);
-  ImgExpMask = cv::Mat(1, 500, CV_8U);
+  //ImgResult = Utils::convertImgToGray(ImgOrig);
+  //ImgExpMask = cv::Mat(1, 500, CV_8U);
+  ImgHarris = cv::imread("C:/Cpp/CV1_task/CV1_task2/checkerboard.png");
+  HarrisDetector Harris(ImgHarris);
 
   // Initalize ImgExpMask with random values
-  for (int i = 0; i < ImgExpMask.total(); i++) {
-    int val_random = rand() % 255;
-    ImgExpMask.at<uchar>(i) = cv::saturate_cast<uchar>(val_random);
-  }
+  //for (int i = 0; i < ImgExpMask.total(); i++) {
+  //  int val_random = rand() % 255;
+  //  ImgExpMask.at<uchar>(i) = cv::saturate_cast<uchar>(val_random);
+  //}
 
 
   // Create a windows for display
-  cv::namedWindow("Original");
-  cv::namedWindow("Sobel");
-  cv::namedWindow("ExpMaskOrig");
-  cv::namedWindow("ExpMask");
+  //cv::namedWindow("Original");
+  //cv::namedWindow("Sobel");
+  //cv::namedWindow("ExpMaskOrig");
+  //cv::namedWindow("ExpMask");
+  cv::namedWindow("Harris");
 
   // Display Images
-  cv::imshow("Original", ImgOrig);
-  cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  cv::imshow("ExpMaskOrig", ImgExpMask);
-  cv::imshow("ExpMask", Utils::convolveMatWithExpMask1D(ImgExpMask));
+  //cv::imshow("Original", ImgOrig);
+  //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
+  //cv::imshow("ExpMaskOrig", ImgExpMask);
+  //cv::imshow("ExpMask", Utils::convolveMatWithExpMask1D(ImgExpMask));
+  cv::imshow("Harris", Harris.filterImgByResponses(cmpFnk));
 
   cv::waitKey();
   return 0;

@@ -13,17 +13,20 @@ private:
     cv::Mat_<float> Ixy;
   };
 
-  Derivatives _derivatives;
+  cv::Mat _ImgOrig;
+  cv::Mat _Responses;
 
 private:
-  Derivatives _calculateDerivatives(const cv::Mat_<float> & Img);
+  Derivatives _computeDerivatives(const cv::Mat_<float> & Img);
+  Derivatives _convolveGaussian(const Derivatives & Derivs);
   cv::Mat _convolveKernel(const cv::Mat_<float> & Img, const cv::Mat & kernel);
-  // Structure tensor - second moment matrix - autocorrelation matrix
-  //cv::Mat _buildStructureTensor(const Derivatives & Derivs);
   cv::Mat _computeResponse(const Derivatives & Derivs);
-
 
 public:
   HarrisDetector();
+  HarrisDetector(const cv::Mat & Img);
   ~HarrisDetector();
+
+  cv::Mat getResponses();
+  cv::Mat filterImgByResponses(bool(*f)(float));
 };
