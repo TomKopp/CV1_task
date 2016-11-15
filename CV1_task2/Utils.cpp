@@ -58,8 +58,6 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   const int col_count = (Img.cols - 1) * Img.channels();
   int r,
     c,
-    val_col_left,
-    val_col_right,
     val_result;
   const uchar *row_cur,
     *row_prev,

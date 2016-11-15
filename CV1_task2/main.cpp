@@ -8,22 +8,21 @@
 #include "HarrisDetector.h"
 
 
-static cv::Mat applySobel(const cv::Mat& Img) {
-  cv::Mat Res;
-  Res.create(Img.size(), Img.type());
-
-  cv::Mat kern = (cv::Mat_<char>(3, 3) << -1, 0, 1,   -2, 0, 2,   -1, 0, 1);
-
-  cv::filter2D(Img, Res, Img.depth(), kern);
-
-  return Res;
+static bool lowerZero(float val) {
+  return val < 0;
 }
 
-static bool cmpFnk(float flubber) {
-  return flubber > 10000;
+static bool greaterOneHundreth(float val) {
+  return val > .01;
 }
 
+static bool lowerNeg100k(float val) {
+  return val < -100000;
+}
 
+static bool greaterNegOneLowerZero(float val) {
+  return (val > -1.0) && (val < 0.0);
+}
 
 int main(int argc, char** argv) {
   cv::Mat ImgOrig
@@ -46,30 +45,21 @@ int main(int argc, char** argv) {
   }
 
   //ImgResult = Utils::convertImgToGray(ImgOrig);
-  //ImgExpMask = cv::Mat(1, 500, CV_8U);
-  ImgHarris = cv::imread("C:/Cpp/CV1_task/CV1_task2/checkerboard.png");
-  HarrisDetector Harris(ImgHarris);
-
-  // Initalize ImgExpMask with random values
-  //for (int i = 0; i < ImgExpMask.total(); i++) {
-  //  int val_random = rand() % 255;
-  //  ImgExpMask.at<uchar>(i) = cv::saturate_cast<uchar>(val_random);
-  //}
+  //ImgHarris = cv::imread(argv[2]);
+  HarrisDetector Harris(ImgOrig);
 
 
   // Create a windows for display
-  //cv::namedWindow("Original");
+  cv::namedWindow("Original");
   //cv::namedWindow("Sobel");
-  //cv::namedWindow("ExpMaskOrig");
-  //cv::namedWindow("ExpMask");
   cv::namedWindow("Harris");
 
   // Display Images
-  //cv::imshow("Original", ImgOrig);
+  cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  //cv::imshow("ExpMaskOrig", ImgExpMask);
-  //cv::imshow("ExpMask", Utils::convolveMatWithExpMask1D(ImgExpMask));
-  cv::imshow("Harris", Harris.filterImgByResponses(cmpFnk));
+  cv::imshow("Harris", Harris.filterImgByResponses(lowerNeg100k));
+  //cv::imshow("Harris", Harris.getDerivatives().Ixy);
+  //std::cout << Harris.getResponses() << std::endl;
 
   cv::waitKey();
   return 0;
