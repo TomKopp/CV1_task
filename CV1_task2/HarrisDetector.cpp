@@ -137,7 +137,7 @@ cv::Mat_<float> HarrisDetector::_computeResponse(const cv::Mat_<float> Structure
     for (int c = 0; c < Ret.cols; c++)
     {
       // Det = AB - C^2
-      det = A.at<float>(r, c) * B.at<float>(r, c) - C.at<float> * C.at<float>;
+      det = A.at<float>(r, c) * B.at<float>(r, c) - C.at<float>(r, c) * C.at<float>(r, c);
       // Tr = A + B
       tr = A.at<float>(r, c) + B.at<float>(r, c);
       // R = Det - k * Tr^2

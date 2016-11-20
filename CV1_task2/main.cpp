@@ -16,6 +16,10 @@ static bool isGreaterOneHundreth(float val) {
   return val > .01;
 }
 
+bool isGreaterThan9k(float val) {
+  return val > 9000;
+}
+
 static bool isLowerNeg100k(float val) {
   return val < -100000;
 }
@@ -79,14 +83,14 @@ int main(int argc, char** argv) {
   // Display Images
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  cv::imshow("Harris", Harris.filterImgByResponses(isGreaterNegOneLowerZero));
+  cv::imshow("Harris", Harris.filterImgByResponses(isGreaterThan9k));
   Harris.getDerivatives().Ix.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIx", ImgHarris);
   Harris.getDerivatives().Iy.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIy", ImgHarris);
   Harris.getDerivatives().Ixy.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIxy", ImgHarris);
-  //std::cout << Harris.getResponses() << std::endl;
+  std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
   return 0;
