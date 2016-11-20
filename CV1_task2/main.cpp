@@ -24,6 +24,28 @@ static bool greaterNegOneLowerZero(float val) {
   return (val > -1.0) && (val < 0.0);
 }
 
+auto lowerThan = [](const float x) {
+  return [&](const float y)->bool {
+    return y < x;
+  };
+};
+
+auto greaterThan = [](const float x) {
+  return [&](const float y)->bool {
+    return y > x;
+  };
+};
+
+auto between = [](const float x, const float z) {
+  return [&](const float y)->bool {
+    return (x < y) && (y < z);
+  };
+};
+
+auto overNineThousand = greaterThan(9000.0f);
+auto lowerNineThousand = lowerThan(9000.0f);
+auto betweenNegOneAndOne = between(-1.0f, 1.0f);
+
 int main(int argc, char** argv) {
   cv::Mat ImgOrig
     , ImgResult
@@ -59,7 +81,7 @@ int main(int argc, char** argv) {
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
   cv::imshow("Harris", Harris.filterImgByResponses(lowerNeg100k));
   //cv::imshow("Harris", Harris.getDerivatives().Ixy);
-  //std::cout << Harris.getResponses() << std::endl;
+  //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
   return 0;
