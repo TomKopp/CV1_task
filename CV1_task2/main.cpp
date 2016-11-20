@@ -8,20 +8,20 @@
 #include "HarrisDetector.h"
 
 
-static bool lowerZero(float val) {
+static bool isLowerZero(float val) {
   return val < 0;
 }
 
-static bool greaterOneHundreth(float val) {
+static bool isGreaterOneHundreth(float val) {
   return val > .01;
 }
 
-static bool lowerNeg100k(float val) {
+static bool isLowerNeg100k(float val) {
   return val < -100000;
 }
 
-static bool greaterNegOneLowerZero(float val) {
-  return (val > -1.0) && (val < 0.0);
+static bool isGreaterNegOneLowerZero(float val) {
+  return (val > -1.0 && val <= 0.0);
 }
 
 int main(int argc, char** argv) {
@@ -57,8 +57,13 @@ int main(int argc, char** argv) {
   // Display Images
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  cv::imshow("Harris", Harris.filterImgByResponses(lowerNeg100k));
-  //cv::imshow("Harris", Harris.getDerivatives().Ixy);
+  cv::imshow("Harris", Harris.filterImgByResponses(isGreaterNegOneLowerZero));
+  Harris.getDerivatives().Ix.convertTo(ImgHarris, CV_8U);
+  cv::imshow("DerivatesIx", ImgHarris);
+  Harris.getDerivatives().Iy.convertTo(ImgHarris, CV_8U);
+  cv::imshow("DerivatesIy", ImgHarris);
+  Harris.getDerivatives().Ixy.convertTo(ImgHarris, CV_8U);
+  cv::imshow("DerivatesIxy", ImgHarris);
   //std::cout << Harris.getResponses() << std::endl;
 
   cv::waitKey();

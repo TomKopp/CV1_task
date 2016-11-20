@@ -1,7 +1,6 @@
 #include "HarrisDetector.h"
 #include "Utils.h"
 
-#include <map>
 #include <opencv2/imgproc/imgproc.hpp>
 
 
@@ -12,8 +11,10 @@ HarrisDetector::Derivatives HarrisDetector::_computeDerivatives(const cv::Mat_<f
 
   // Apply horizontal Sobel kernel to image
   Derivs.Ix = _convolveKernel(Img, (cv::Mat_<float>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1));
+  //cv::Sobel(Img, Derivs.Ix, CV_32F, 1,0);
   // Apply vertical Sobel kernel to image
   Derivs.Iy = _convolveKernel(Img, (cv::Mat_<float>(3, 3) << 1, 2, 1, 0, 0, 0, -1, -2, -1));
+  //cv::Sobel(Img, Derivs.Iy, CV_32F, 0, 1);
 
   Derivs.Ixy = cv::Mat_<float>(Img.size(), 0.0);
   for (int r = 0; r < Derivs.Ix.rows; ++r) {
@@ -119,17 +120,17 @@ HarrisDetector::HarrisDetector()
 HarrisDetector::HarrisDetector(const cv::Mat & Img)
 {
   _ImgOrig = Img.clone();
+  cv::Mat Tmp;
+  Utils::convertImgToGray(_ImgOrig).convertTo(Tmp, CV_32F);
 
-  _derivatives = _convolveGaussian(
-    _computeDerivatives(
-      Utils::convertImgToGray(_ImgOrig)
-    )
+  _derivatives = _computeDerivatives(
+    Tmp
   );
 
   _Responses = _computeResponse(
     _convolveGaussian(
       _computeDerivatives(
-        Utils::convertImgToGray(_ImgOrig)
+        Tmp
       )
     )
   );
@@ -159,8 +160,14 @@ cv::Mat HarrisDetector::filterImgByResponses(bool(*cmpFnc)(float))
   // the value of the original Image is keept else it's blacked out
   for (int r = 0; r < Ret.rows; ++r) {
     for (int c = 0; c < Ret.cols; ++c) {
-      if (!cmpFnc(_Responses.at<float>(r, c))) {
+      /*if (!cmpFnc(_Responses.at<float>(r, c))) {
         Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0,0,0);
+      }*/
+      if (cmpFnc(_Responses.at<float>(r, c))) {
+        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
+      }
+      else {
+        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
       }
     }
   }
