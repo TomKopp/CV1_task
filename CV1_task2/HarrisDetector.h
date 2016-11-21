@@ -33,6 +33,38 @@ public:
   ~HarrisDetector();
 
   cv::Mat_<float> getResponse();
-  Derivatives getDerivatives();
-  cv::Mat filterImgByResponses(bool(*cmpFnc)(float));
+  Derivatives getDerivatives(bool raw = false);
+  //cv::Mat filterImgByResponses(bool(*cmpFnc)(float));
+
+/// <summary>
+/// Filters the img by responses.
+/// If response value greater/lower/... than a threshold, determinded by the compare function,
+/// the value of the original Image is keept else it's blacked out.
+/// The compare function gets the float value of the Harris response and has to return a boolean.
+/// </summary>
+/// <param name="cmpFnc">The compare function.</param>
+/// <returns>cv::Mat</returns>
+  template<typename Functor> inline
+    cv::Mat filterImgByResponse(const Functor& cmpFnc)
+  {
+    cv::Mat Ret = _ImgOrig.clone();
+    Ret.convertTo(Ret, CV_32F);
+
+    for (int r = 0; r < Ret.rows; ++r) {
+      for (int c = 0; c < Ret.cols; ++c) {
+        if (!cmpFnc(_Response.at<float>(r, c))) {
+          Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
+        }
+        //if (cmpFnc(_Response.at<float>(r, c))) {
+        //  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
+        //}
+        //else {
+        //  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
+        //}
+      }
+    }
+
+    Ret.convertTo(Ret, _ImgOrig.type());
+    return Ret;
+  }
 };

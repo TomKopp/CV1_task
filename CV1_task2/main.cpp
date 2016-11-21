@@ -12,22 +12,6 @@ static bool isLowerZero(float val) {
   return val < 0;
 }
 
-static bool isGreaterOneHundreth(float val) {
-  return val > .01;
-}
-
-bool isGreaterThan9k(float val) {
-  return val > 9000;
-}
-
-static bool isLowerNeg100k(float val) {
-  return val < -100000;
-}
-
-static bool isGreaterNegOneLowerZero(float val) {
-  return (val > -1.0 && val <= 0.0);
-}
-
 auto lowerThan = [](const float x) {
   return [&](const float y)->bool {
     return y < x;
@@ -46,9 +30,9 @@ auto between = [](const float x, const float z) {
   };
 };
 
-auto overNineThousand = greaterThan(9000.0f);
-auto lowerNineThousand = lowerThan(9000.0f);
-auto betweenNegOneAndOne = between(-1.0f, 1.0f);
+auto isOverNineThousand = greaterThan(9000.0f);
+auto isLowerNineThousand = lowerThan(9000.0f);
+auto isBetweenNegOneAndOne = between(-1.0f, 1.0f);
 
 int main(int argc, char** argv) {
   cv::Mat ImgOrig
@@ -83,14 +67,15 @@ int main(int argc, char** argv) {
   // Display Images
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  cv::imshow("Harris", Harris.filterImgByResponses(isGreaterThan9k));
+  //cv::imshow("Harris", Harris.filterImgByResponse(between(-30, 30)));
+  cv::imshow("Harris", Harris.filterImgByResponse(isLowerZero));
   Harris.getDerivatives().Ix.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIx", ImgHarris);
   Harris.getDerivatives().Iy.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIy", ImgHarris);
   Harris.getDerivatives().Ixy.convertTo(ImgHarris, CV_8U);
   cv::imshow("DerivatesIxy", ImgHarris);
-  std::cout << Harris.getResponse() << std::endl;
+  //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
   return 0;

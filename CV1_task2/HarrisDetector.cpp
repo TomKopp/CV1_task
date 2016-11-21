@@ -239,35 +239,49 @@ cv::Mat_<float> HarrisDetector::getResponse()
 /// Gets the derivatives.
 /// </summary>
 /// <returns>HarrisDetector::Derivatives</returns>
-HarrisDetector::Derivatives HarrisDetector::getDerivatives()
+HarrisDetector::Derivatives HarrisDetector::getDerivatives(bool raw)
 {
-  return _Derivatives;
-}
+  Derivatives Ret;
 
-cv::Mat HarrisDetector::filterImgByResponses(bool(*cmpFnc)(float))
-{
-  cv::Mat Ret = _ImgOrig.clone();
-  Ret.convertTo(Ret, CV_32F);
-
-  // If response value greater/lower/... than a threshold, determinded by the compare function,
-  // the value of the original Image is keept else it's blacked out
-  for (int r = 0; r < Ret.rows; ++r) {
-    for (int c = 0; c < Ret.cols; ++c) {
-      /*if (!cmpFnc(_Response.at<float>(r, c))) {
-        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0,0,0);
-      }*/
-      if (cmpFnc(_Response.at<float>(r, c))) {
-        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
-      }
-      else {
-        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
-      }
-    }
+  if (!raw) {
+    Ret.Ix = _Derivatives.Ix.clone();
+    //_Derivatives.Ix.convertTo(Ret.Ix, CV_8U);
+    Ret.Iy = _Derivatives.Iy.clone();
+    //_Derivatives.Iy.convertTo(Ret.Iy, CV_8U);
+    Ret.Ixy = _Derivatives.Ixy.clone();
+    Ret.Ixy.convertTo(Ret.Ixy, _ImgOrig.type()); // DAFUK!!! Assertion fail
+  }
+  else {
+    Ret =_Derivatives;
   }
 
-  //Ret.forEach<float>([&](cv::Point &p, const int * position)->void {
-  //});
-
-  Ret.convertTo(Ret, CV_8U);
   return Ret;
 }
+
+//cv::Mat HarrisDetector::filterImgByResponses(bool(*cmpFnc)(float))
+//{
+//  cv::Mat Ret = _ImgOrig.clone();
+//  Ret.convertTo(Ret, CV_32F);
+//
+//  // If response value greater/lower/... than a threshold, determinded by the compare function,
+//  // the value of the original Image is keept else it's blacked out
+//  for (int r = 0; r < Ret.rows; ++r) {
+//    for (int c = 0; c < Ret.cols; ++c) {
+//      /*if (!cmpFnc(_Response.at<float>(r, c))) {
+//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0,0,0);
+//      }*/
+//      if (cmpFnc(_Response.at<float>(r, c))) {
+//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
+//      }
+//      else {
+//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
+//      }
+//    }
+//  }
+//
+//  //Ret.forEach<float>([&](cv::Point &p, const int * position)->void {
+//  //});
+//
+//  Ret.convertTo(Ret, CV_8U);
+//  return Ret;
+//}
