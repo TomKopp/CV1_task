@@ -148,84 +148,6 @@ cv::Mat_<float> HarrisDetector::_computeResponse(const cv::Mat_<float> Structure
   return Ret;
 }
 
-//HarrisDetector::Derivatives HarrisDetector::_convolveDerivativesWithGaussian(const Derivatives & Derivs)
-//{
-//  Derivatives Ret;
-//  cv::Mat GaussianKernel = (cv::Mat_<float>(5, 5) <<
-//    1,  4,  7,  4, 1,
-//    4, 16, 26, 16, 4,
-//    7, 16, 41, 16, 7,
-//    4, 16, 26, 16, 4, 
-//    1,  4,  7,  4, 1);
-//  GaussianKernel = GaussianKernel / 273.0;
-//
-//  Ret.Ix = _convolveKernel(Derivs.Ix, GaussianKernel);
-//  Ret.Iy = _convolveKernel(Derivs.Iy, GaussianKernel);
-//  Ret.Ixy = _convolveKernel(Derivs.Ixy, GaussianKernel);
-//
-//  return Ret;
-//}
-
-//cv::Mat HarrisDetector::_computeDerivativesResponse(const Derivatives & Derivs)
-//{
-//  cv::Mat_<float> Ret(Derivs.Ix.size(), 0.0);
-//  // M = |A C| - Structure tensor - second moment matrix - autocorrelation matrix
-//  //     |C B|
-//  float M[3] = {};
-//  float k = 0.04f; // empirical constant: k = 0.04 - 0.06
-//  float det; // A*B - C^2
-//  float trace; // A + B
-//  // float R = det(M) - k * Trace(M)^2 // Response
-//
-//  for (int r = 0; r < Ret.rows; ++r) {
-//    for (int c = 0; c < Ret.cols; ++c) {
-//      // Build structor tensor
-//      M[0] = Derivs.Ix.at<float>(r, c) * Derivs.Ix.at<float>(r, c); // A = Ix^2
-//      M[1] = Derivs.Iy.at<float>(r, c) * Derivs.Iy.at<float>(r, c); // B = Iy^2
-//      M[2] = Derivs.Ix.at<float>(r, c) * Derivs.Iy.at<float>(r, c); // C = Ix * Iy
-//      // Calculate Determinant of M
-//      det = M[0] * M[1] - M[2] * M[2];
-//      // Calculate Trace of M
-//      trace = M[0] + M[1];
-//      // calculate Harris response
-//      Ret.at<float>(r, c) = det - k * trace * trace;
-//      //Ret.at<float>(r, c) = 2 * det / (trace + 1);
-//    }
-//  }
-//
-//  return Ret;
-//}
-
-//cv::Mat HarrisDetector::_findLocalMaxima(const cv::Mat_<float>& Img)
-//{
-//  cv::Mat_<float> Ret(Img.size(), 0.0);
-//  float val;
-//  std::map<float> myMap;
-//
-//
-//  for (int r = 1; r < Ret.rows - 1; ++r) {
-//    for (int c = 1; c < Ret.cols - 1; ++c) {
-//      val = Img.at<float>(r, c);
-//      if (val < Img.at<float>(r - 1, c - 1)
-//        || val < Img.at<float>(r - 1, c)
-//        || val < Img.at<float>(r - 1, c + 1)
-//        || val < Img.at<float>(r, c - 1)
-//        || val < Img.at<float>(r, c + 1)
-//        || val < Img.at<float>(r + 1, c - 1)
-//        || val < Img.at<float>(r + 1, c)
-//        || val < Img.at<float>(r + 1, c + 1)
-//        ) {
-//        Ret.at<float>(r, c) = 0.0;
-//      }
-//      else {
-//        Ret.at<float>(r, c) = val;
-//      }
-//    }
-//  }
-//
-//  return Ret;
-//}
-
 /// <summary>
 /// Gets the Harris response.
 /// </summary>
@@ -238,50 +160,20 @@ cv::Mat_<float> HarrisDetector::getResponse()
 /// <summary>
 /// Gets the derivatives.
 /// </summary>
-/// <returns>HarrisDetector::Derivatives</returns>
-HarrisDetector::Derivatives HarrisDetector::getDerivatives(bool raw)
+/// <returns>std::array<cv::Mat, 3></returns>
+std::array<cv::Mat, 3> HarrisDetector::getDerivatives(bool raw)
 {
-  Derivatives Ret;
+  std::array<cv::Mat, 3> Ret = {
+    _Derivatives.Ix.clone(),
+    _Derivatives.Iy.clone(),
+    _Derivatives.Ixy.clone()
+  };
 
   if (!raw) {
-    Ret.Ix = _Derivatives.Ix.clone();
-    //_Derivatives.Ix.convertTo(Ret.Ix, CV_8U);
-    Ret.Iy = _Derivatives.Iy.clone();
-    //_Derivatives.Iy.convertTo(Ret.Iy, CV_8U);
-    Ret.Ixy = _Derivatives.Ixy.clone();
-    Ret.Ixy.convertTo(Ret.Ixy, _ImgOrig.type()); // DAFUK!!! Assertion fail
-  }
-  else {
-    Ret =_Derivatives;
+    Ret[0].convertTo(Ret[0], _ImgOrig.type());
+    Ret[1].convertTo(Ret[1], _ImgOrig.type());
+    Ret[2].convertTo(Ret[2], _ImgOrig.type());
   }
 
   return Ret;
 }
-
-//cv::Mat HarrisDetector::filterImgByResponses(bool(*cmpFnc)(float))
-//{
-//  cv::Mat Ret = _ImgOrig.clone();
-//  Ret.convertTo(Ret, CV_32F);
-//
-//  // If response value greater/lower/... than a threshold, determinded by the compare function,
-//  // the value of the original Image is keept else it's blacked out
-//  for (int r = 0; r < Ret.rows; ++r) {
-//    for (int c = 0; c < Ret.cols; ++c) {
-//      /*if (!cmpFnc(_Response.at<float>(r, c))) {
-//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0,0,0);
-//      }*/
-//      if (cmpFnc(_Response.at<float>(r, c))) {
-//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
-//      }
-//      else {
-//        Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
-//      }
-//    }
-//  }
-//
-//  //Ret.forEach<float>([&](cv::Point &p, const int * position)->void {
-//  //});
-//
-//  Ret.convertTo(Ret, CV_8U);
-//  return Ret;
-//}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <opencv2/core/core.hpp>
 
 
@@ -23,9 +24,6 @@ private:
   cv::Mat_<float> _convolveGaussian(const cv::Mat_<float>& Img);
   cv::Mat_<float> _convolveKernel(const cv::Mat_<float> & Img, const cv::Mat & kernel);
   cv::Mat_<float> _computeResponse(const cv::Mat_<float> StructureTensorElements[]);
-  //Derivatives _convolveDerivativesWithGaussian(const Derivatives & Derivs);
-  //cv::Mat _computeDerivativesResponse(const Derivatives & Derivs);
-  //cv::Mat _findLocalMaxima(const cv::Mat_<float> & Img);
 
 public:
   HarrisDetector();
@@ -33,8 +31,7 @@ public:
   ~HarrisDetector();
 
   cv::Mat_<float> getResponse();
-  Derivatives getDerivatives(bool raw = false);
-  //cv::Mat filterImgByResponses(bool(*cmpFnc)(float));
+  std::array<cv::Mat, 3> getDerivatives(bool raw = false);
 
 /// <summary>
 /// Filters the img by responses.

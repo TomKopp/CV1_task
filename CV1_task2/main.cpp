@@ -8,9 +8,6 @@
 #include "HarrisDetector.h"
 
 
-static bool isLowerZero(float val) {
-  return val < 0;
-}
 
 auto lowerThan = [](const float x) {
   return [&](const float y)->bool {
@@ -35,10 +32,8 @@ auto isLowerNineThousand = lowerThan(9000.0f);
 auto isBetweenNegOneAndOne = between(-1.0f, 1.0f);
 
 int main(int argc, char** argv) {
-  cv::Mat ImgOrig
-    , ImgResult
-    , ImgExpMask
-    , ImgHarris;
+  cv::Mat ImgOrig,
+    ImgHarris;
   
 
   // Check if image path is supplied as argument
@@ -54,8 +49,6 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  //ImgResult = Utils::convertImgToGray(ImgOrig);
-  //ImgHarris = cv::imread(argv[2]);
   HarrisDetector Harris(ImgOrig);
 
 
@@ -68,13 +61,12 @@ int main(int argc, char** argv) {
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
   //cv::imshow("Harris", Harris.filterImgByResponse(between(-30, 30)));
-  cv::imshow("Harris", Harris.filterImgByResponse(isLowerZero));
-  Harris.getDerivatives().Ix.convertTo(ImgHarris, CV_8U);
-  cv::imshow("DerivatesIx", ImgHarris);
-  Harris.getDerivatives().Iy.convertTo(ImgHarris, CV_8U);
-  cv::imshow("DerivatesIy", ImgHarris);
-  Harris.getDerivatives().Ixy.convertTo(ImgHarris, CV_8U);
-  cv::imshow("DerivatesIxy", ImgHarris);
+  cv::imshow("Harris", Harris.filterImgByResponse(lowerThan(0)));
+  
+  std::array<cv::Mat, 3> Derivs = Harris.getDerivatives();
+  cv::imshow("DerivatesIx", Derivs[0]);
+  cv::imshow("DerivatesIy", Derivs[1]);
+  cv::imshow("DerivatesIxy", Derivs[2]);
   //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
