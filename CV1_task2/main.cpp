@@ -60,13 +60,14 @@ int main(int argc, char** argv) {
   // Display Images
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  //cv::imshow("Harris", Harris.filterImgByResponse(between(-30, 30)));
-  cv::imshow("Harris", Harris.filterImgByResponse(lowerThan(0)));
   
-  std::array<cv::Mat, 3> Derivs = Harris.getDerivatives();
-  cv::imshow("DerivatesIx", Derivs[0]);
-  cv::imshow("DerivatesIy", Derivs[1]);
-  cv::imshow("DerivatesIxy", Derivs[2]);
+  
+
+  std::array<cv::Mat, 3> Derivatives = Harris.getDerivatives();
+  cv::imshow("DerivatesIx", Derivatives[0]);
+  cv::imshow("DerivatesIy", Derivatives[1]);
+  cv::imshow("DerivatesIxy", Derivatives[2]);
+  cv::imshow("Harris", Harris.filterImgByResponse(between(-30, 30)));
   //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
