@@ -155,7 +155,6 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response, uchar Ne
 {
   cv::Mat Ret(Response.size(), CV_32F, cv::Scalar(0.0)); // == Mask
 
-  // HOW DO I FREE THIS??? recursively??
   bool(*skip)[2] = new bool[Response.rows][2];
 
   int
@@ -176,7 +175,10 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response, uchar Ne
 
   }
 
-  // FREE skip !!!
+  for (int i = 0; i < Response.rows; i++) {
+    delete skip[i];
+  }
+  delete skip;
   return Ret;
 }
 
