@@ -146,6 +146,97 @@ cv::Mat HarrisDetector::_computeResponse(const std::array<cv::Mat, 3>& Structure
 }
 
 /// <summary>
+/// Performs the non-maxima suppression on a given 3x3 neighboorhood.
+/// </summary>
+/// <param name="Response">The response.</param>
+/// <returns></returns>
+cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
+{
+  cv::Mat Ret(Response.size(), CV_32F, cv::Scalar(0.0)); // == Mask
+  int
+    c = 2,
+    r = 2,
+    h = Ret.rows,
+    w = Ret.cols,
+    cur = 1,
+    next = 2;
+  float val; // current pixels value
+
+             // USE EIGEN!!!!
+  bool(*skip)[2] = new bool[h][2](); // scanline masks
+  for (int i = 0; i < h; i++) {
+    skip[i][0] = false;
+    skip[i][1] = false;
+  }
+
+  for (c; c < w - 1; c++) {
+    r = 2; // set r every start of the loop to two
+
+    while (r < h) {
+      if (skip[r][cur]) { // skip current pixel
+        r++;
+        continue;
+      }
+      val = Response.at<float>(r, c);
+
+      if (val <= Response.at<float>(r + 1, c)) { // compare to pixel on the left
+        r++;
+        while (r < h && val <= Response.at<float>(r + 1, c)) { // rising
+          r++;
+        }
+        if (r == h) { // reach scanline's local maximum
+          break;
+        }
+      }
+      else {
+        if (val <= Response.at<float>(r - 1, c)) { // compare to pixel on the right
+          r++;
+          continue;
+        }
+      }
+      skip[r + 1][cur] = true; // skip next pixel in the scanline
+
+                               // compare to 3 future then 3 past neighbors
+      if (val <= Response.at<float>(r - 1, c + 1)) {
+        r++;
+        continue;
+      }
+      skip[r - 1][next] = true; // skip future neighbors only
+
+      if (val <= Response.at<float>(r, c + 1)) {
+        r++;
+        continue;
+      }
+      skip[r][next] = true;
+
+      if (val <= Response.at<float>(r + 1, c + 1)) {
+        r++;
+        continue;
+      }
+      skip[r + 1][next] = true;
+
+      if (val <= Response.at<float>(r - 1, c - 1)) { r++; continue; }
+      if (val <= Response.at<float>(r, c - 1)) { r++; continue; }
+      if (val <= Response.at<float>(r + 1, c - 1)) { r++; continue; }
+
+      Ret.at<float>(r, c) = Response.at<float>(r, c); // a new local maximum is found
+    }
+
+    // swap skip mask indices
+    std::swap(cur, next);
+    for (int i = 0; i < h; i++) { // reset next scanline mask
+      skip[i][next] = false;
+    }
+  }
+
+  for (int i = 0; i < h; i++) { // cleanup scanline mask
+    delete skip[i];
+  }
+  delete skip;
+  return Ret;
+}
+
+/// <summary>
 /// Performs the non-maxima suppression on a given neighboorhood size.
 /// </summary>
 /// <param name="Response">The response.</param>
@@ -153,33 +244,8 @@ cv::Mat HarrisDetector::_computeResponse(const std::array<cv::Mat, 3>& Structure
 /// <returns></returns>
 cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood)
 {
-  cv::Mat Ret(Response.size(), CV_32F, cv::Scalar(0.0)); // == Mask
 
-  bool(*skip)[2] = new bool[Response.rows][2];
-
-  int
-    c = 2,
-    r = 2,
-    cur = 1,
-    next = 2;
-
-  for (c; c < Ret.cols - 1; c++) {
-    while (r < Ret.rows)
-    {
-      if (skip[r][cur])
-      {
-
-      }
-      break;
-    }
-
-  }
-
-  for (int i = 0; i < Response.rows; i++) {
-    delete skip[i];
-  }
-  delete skip;
-  return Ret;
+  return cv::Mat();
 }
 
 /// <summary>
