@@ -16,7 +16,7 @@ private:
   cv::Mat _convolveGaussian(const cv::Mat & Img);
   std::array<cv::Mat, 3> _computeDerivatives(const cv::Mat & Img);
   cv::Mat _computeResponse(const std::array<cv::Mat, 3> & StructureTensor);
-
+  cv::Mat _nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood);
 
 public:
   HarrisDetector();

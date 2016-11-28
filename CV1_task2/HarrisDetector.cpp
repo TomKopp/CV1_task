@@ -39,7 +39,7 @@ HarrisDetector::HarrisDetector()
 /// </summary>
 /// <param name="Img">The img.</param>
 HarrisDetector::HarrisDetector(const cv::Mat & Img)
-  : _ImgOrig(Img)
+  : _ImgOrig(Img.clone())
 {
   cv::Mat WorkingCopy;
   std::array<cv::Mat, 3> StructureTensor;
@@ -142,6 +142,41 @@ cv::Mat HarrisDetector::_computeResponse(const std::array<cv::Mat, 3>& Structure
     }
   }
 
+  return Ret;
+}
+
+/// <summary>
+/// Performs the non-maxima suppression on a given neighboorhood size.
+/// </summary>
+/// <param name="Response">The response.</param>
+/// <param name="Neighborhood">The neighborhood defined as (2n + 1)×(2n + 1). Give n</param>
+/// <returns></returns>
+cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood)
+{
+  cv::Mat Ret(Response.size(), CV_32F, cv::Scalar(0.0)); // == Mask
+
+  // HOW DO I FREE THIS??? recursively??
+  bool(*skip)[2] = new bool[Response.rows][2];
+
+  int
+    c = 2,
+    r = 2,
+    cur = 1,
+    next = 2;
+
+  for (c; c < Ret.cols - 1; c++) {
+    while (r < Ret.rows)
+    {
+      if (skip[r][cur])
+      {
+
+      }
+      break;
+    }
+
+  }
+
+  // FREE skip !!!
   return Ret;
 }
 
