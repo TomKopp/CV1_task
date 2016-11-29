@@ -15,8 +15,10 @@ HarrisDetector::HarrisDetector()
 /// <summary>
 /// Initializes a new instance of the <see cref="HarrisDetector"/> class.
 /// Calculates the Harris corner response.
-/// 
+/// </summary>
+/// <remarks>
 /// A Combined Corner And Edge Detector - Harris & Stephens
+/// http://www.bmva.org/bmvc/1988/avc-88-023.pdf
 /// X = I * (-1, 0, 1)
 /// Y = I * (-1, 0, 1)T
 /// E(x,y) = A(x^2) + Cxy + B(y^2)
@@ -36,7 +38,7 @@ HarrisDetector::HarrisDetector()
 /// The flat region is specified by Tr falling below some selected threshold
 /// Corner region pixel is an 8-way local maximum
 /// Edge region pixel if R negative and local minimum
-/// </summary>
+/// </remarks>
 /// <param name="Img">The img.</param>
 HarrisDetector::HarrisDetector(const cv::Mat & Img)
   : _ImgOrig(Img.clone())
@@ -148,103 +150,101 @@ cv::Mat HarrisDetector::_computeResponse(const std::array<cv::Mat, 3>& Structure
 /// <summary>
 /// Performs the non-maxima suppression on a given 3x3 neighboorhood.
 /// </summary>
+/// <remarks>https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel</remarks>
 /// <param name="Response">The response.</param>
-/// <returns></returns>
+/// <returns>cv::Mat</returns>
 cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
 {
   cv::Mat Ret(Response.size(), CV_32F, cv::Scalar(0.0)); // == Mask
   int
-    c = 2,
-    r = 2,
-    h = Ret.rows,
-    w = Ret.cols,
-    cur = 1,
-    next = 2;
-  float val; // current pixels value
+    c, /// <value>column index</value>
+    r, /// <value>row index</value>
+    h = Response.rows,
+    w = Response.cols,
+    cur = 0,
+    next = 1;
 
-             // USE EIGEN!!!!
-  bool(*skip)[2] = new bool[h][2](); // scanline masks
-  for (int i = 0; i < h; i++) {
+  bool(*skip)[2] = new bool[w][2]; // skanline mask
+  for (int i = 0; i < w; ++i) { // initialize mask
     skip[i][0] = false;
     skip[i][1] = false;
   }
 
-  for (c; c < w - 1; c++) {
-    r = 2; // set r every start of the loop to two
+  for (r = 2; r < h - 1; ++r) {
+    c = 2; // set c (column index) every start of the loop to two
 
-    while (r < h) {
-      if (skip[r][cur]) { // skip current pixel
-        r++;
+    while (c < (w - 1)) {
+      if (skip[c][cur]) { // skip current pixel
+        ++c;
         continue;
       }
-      val = Response.at<float>(r, c);
 
-      if (val <= Response.at<float>(r + 1, c)) { // compare to pixel on the left
-        r++;
-        while (r < h && val <= Response.at<float>(r + 1, c)) { // rising
-          r++;
+      /* Scanline in 1D */
+      if (Response.at<float>(r, c) <= Response.at<float>(r, c + 1)) {
+        ++c;
+        while (c < w && Response.at<float>(r, c) <= Response.at<float>(r, c + 1)) { // compare pixels right neighbor with its right neighbor
+          ++c;
         }
-        if (r == h) { // reach scanline's local maximum
+        if (c == w) {
           break;
         }
       }
       else {
-        if (val <= Response.at<float>(r - 1, c)) { // compare to pixel on the right
-          r++;
+        if (Response.at<float>(r, c) <= Response.at<float>(r, c - 1)) {
+          ++c;
           continue;
         }
       }
-      skip[r + 1][cur] = true; // skip next pixel in the scanline
+      skip[c + 1][cur] = true;
+      /********/
 
-                               // compare to 3 future then 3 past neighbors
-      if (val <= Response.at<float>(r - 1, c + 1)) {
-        r++;
+      // compare to 3 future then 3 past neighbors
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c - 1)) {
+        ++c;
         continue;
       }
-      skip[r - 1][next] = true; // skip future neighbors only
+      skip[c - 1][next] = true;
 
-      if (val <= Response.at<float>(r, c + 1)) {
-        r++;
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c)) {
+        ++c;
         continue;
       }
-      skip[r][next] = true;
+      skip[c][next] = true;
 
-      if (val <= Response.at<float>(r + 1, c + 1)) {
-        r++;
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c + 1)) {
+        ++c;
         continue;
       }
-      skip[r + 1][next] = true;
+      skip[c + 1][next] = true;
 
-      if (val <= Response.at<float>(r - 1, c - 1)) { r++; continue; }
-      if (val <= Response.at<float>(r, c - 1)) { r++; continue; }
-      if (val <= Response.at<float>(r + 1, c - 1)) { r++; continue; }
+      if (Response.at<float>(r, c) <= Response.at<float>(r - 1, c - 1)) { ++c; continue; }
+      if (Response.at<float>(r, c) <= Response.at<float>(r - 1, c)) { ++c; continue; }
+      if (Response.at<float>(r, c) <= Response.at<float>(r - 1, c + 1)) { ++c; continue; }
 
-      Ret.at<float>(r, c) = Response.at<float>(r, c); // a new local maximum is found
+      Ret.at<float>(r, c) = Response.at<float>(r, c);
+      ++c;
     }
 
     // swap skip mask indices
     std::swap(cur, next);
-    for (int i = 0; i < h; i++) { // reset next scanline mask
+    for (int i = 0; i < w; ++i) { // reset next scanline mask
       skip[i][next] = false;
     }
   }
 
-  for (int i = 0; i < h; i++) { // cleanup scanline mask
-    delete skip[i];
-  }
-  delete skip;
+  delete[] skip;
   return Ret;
 }
 
 /// <summary>
 /// Performs the non-maxima suppression on a given neighboorhood size.
 /// </summary>
+/// <remarks>https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel</remarks>
 /// <param name="Response">The response.</param>
 /// <param name="Neighborhood">The neighborhood defined as (2n + 1)×(2n + 1). Give n</param>
-/// <returns></returns>
+/// <returns>cv::Mat</returns>
 cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood)
 {
-
   return cv::Mat();
 }
 

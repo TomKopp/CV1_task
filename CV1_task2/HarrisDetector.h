@@ -17,7 +17,7 @@ private:
   std::array<cv::Mat, 3> _computeDerivatives(const cv::Mat & Img);
   cv::Mat _computeResponse(const std::array<cv::Mat, 3> & StructureTensor);
   cv::Mat _nonMaximaSuppression(const cv::Mat & Response);
-  cv::Mat _nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood = 1);
+  cv::Mat _nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood);
 
 public:
   HarrisDetector();
@@ -51,6 +51,29 @@ public:
         }
         else {
           Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
+        }
+      }
+    }
+
+    Ret.convertTo(Ret, _ImgOrig.type());
+    return Ret;
+  }
+
+  /// <summary>
+  /// Filters the corners of the Response after non-maxima suppression.
+  /// </summary>
+  /// <param name="cmpFnc">The compare function.</param>
+  /// <returns></returns>
+  template<typename Functor> inline
+    cv::Mat filterCorners(const Functor& cmpFnc)
+  {
+    cv::Mat Ret(_Response.size(), CV_32FC3, cv::Scalar::all(0.0));
+    cv::Mat NMS = _nonMaximaSuppression(_Response);
+
+    for (int r = 0; r < Ret.rows; r++) {
+      for (int c = 0; c < Ret.cols; c++) {
+        if (cmpFnc(NMS.at<float>(r, c))) {
+          Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
         }
       }
     }

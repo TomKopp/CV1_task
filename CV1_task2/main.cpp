@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
   cv::imshow("DerivatesIx", Derivatives[0]);
   cv::imshow("DerivatesIy", Derivatives[1]);
   cv::imshow("DerivatesIxy", Derivatives[2]);
-  cv::imshow("Harris", Harris.filterImgByResponse(between(-30, 30)));
+  cv::imshow("Harris", Harris.filterCorners(greaterThan(10000)));
   //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
