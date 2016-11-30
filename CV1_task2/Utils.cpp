@@ -48,6 +48,11 @@ void Utils::drawPointInMat(cv::Mat & Img, const cv::Point & Pnt, uchar Color)
   Img.at<cv::Vec3b>(Pnt) = cv::Vec3b(Color, Color, Color);
 }
 
+/// <summary>
+/// Convolves the mat with sobel kernel.
+/// </summary>
+/// <param name="Img">The img.</param>
+/// <returns>cv::Mat</returns>
 cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
 {
   // Accept only char type matrices
@@ -56,8 +61,9 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   cv::Mat Res, PreComputed = cv::Mat_<int>(Img.size());
   const int row_count = Img.rows - 1;
   const int col_count = (Img.cols - 1) * Img.channels();
-  int r,
-    c,
+  int
+		r, // row index
+    c, // column index
     val_result;
   const uchar *row_cur,
     *row_prev,
@@ -65,10 +71,9 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
   uchar *row_res;
   cv::Point nw, ne, se, sw;
 
-  // Create result image with same size and type like the origninal one. Initialize pixel values with 0.
-  Res.create(Img.size(), Img.type());
-  Res = cv::Scalar::all(0);
-  PreComputed = cv::Scalar::all(INT_MAX);
+  Res.create(Img.size(), Img.type()); // Create result image with same size and type like the origninal one.
+  Res = cv::Scalar::all(0); // Initialize pixel values with 0.
+  PreComputed = cv::Scalar::all(INT_MAX); // Mat for the precomputet values of the Kernel, initialize with max int to distinguish precalculatet Points from unvisited ones
 
   for (r = 1; r < row_count; ++r) {
     // Get pointer to rows
@@ -78,8 +83,8 @@ cv::Mat Utils::convolveMatWithSobel(const cv::Mat & Img)
     row_next = Img.ptr<uchar>(r + 1);
 
     for (c = 1; c < col_count; ++c) {
-      nw = cv::Point(c - 1, r - 1);
-      ne = cv::Point(c + 1, r - 1);
+      nw = cv::Point(c - 1, r - 1); // |nw ne|
+      ne = cv::Point(c + 1, r - 1); // |sw se|
       se = cv::Point(c + 1, r + 1);
       sw = cv::Point(c - 1, r + 1);
       // Calculate value of the left operator column if there are no previously created ones.
