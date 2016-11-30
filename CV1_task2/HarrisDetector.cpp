@@ -82,6 +82,10 @@ cv::Mat HarrisDetector::_convolveKernel(const cv::Mat & Img, const cv::Mat & Ker
 /// <summary>
 /// Convolves the image with a gaussian kernel.
 /// </summary>
+/// <remarks>
+/// Kernel from here: http://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+/// for sigma = 1
+/// </remarks>
 /// <param name="Img">The img.</param>
 /// <returns>cv::Mat</returns>
 cv::Mat HarrisDetector::_convolveGaussian(const cv::Mat & Img)
