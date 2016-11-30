@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
   // Display Images
   cv::imshow("Original", ImgOrig);
-  //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
+  //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgOrig));
 
 
 
