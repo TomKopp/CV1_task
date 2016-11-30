@@ -9,12 +9,12 @@ class HarrisDetector
 private:
   cv::Mat _ImgOrig;
   cv::Mat _Response;
-  std::array<cv::Mat, 3> _Derivatives;
+  std::array<cv::Mat, 2> _Derivatives;
 
 private:
   cv::Mat _convolveKernel(const cv::Mat & Img, const cv::Mat & Kernel);
   cv::Mat _convolveGaussian(const cv::Mat & Img);
-  std::array<cv::Mat, 3> _computeDerivatives(const cv::Mat & Img);
+  std::array<cv::Mat, 2> _computeDerivatives(const cv::Mat & Img);
   cv::Mat _computeResponse(const std::array<cv::Mat, 3> & StructureTensor);
   cv::Mat _nonMaximaSuppression(const cv::Mat & Response);
   cv::Mat _nonMaximaSuppression(const cv::Mat & Response, uchar Neighborhood);
@@ -25,7 +25,7 @@ public:
   ~HarrisDetector();
 
   cv::Mat getResponse();
-  std::array<cv::Mat, 3> getDerivatives(bool raw = false);
+  std::array<cv::Mat, 2> getDerivatives(bool raw = false);
 
   /// <summary>
   /// Filters the img by responses.

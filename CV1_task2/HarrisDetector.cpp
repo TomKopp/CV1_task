@@ -49,10 +49,10 @@ HarrisDetector::HarrisDetector(const cv::Mat & Img)
   WorkingCopy = Utils::convertImgToGray(WorkingCopy);
 
   _Derivatives = _computeDerivatives(WorkingCopy);
-  
+
   StructureTensor[0] = _convolveGaussian(_Derivatives[0].mul(_Derivatives[0])); // A = X^2 * w
   StructureTensor[1] = _convolveGaussian(_Derivatives[1].mul(_Derivatives[1])); // B = Y^2 * w
-  StructureTensor[2] = _convolveGaussian(_Derivatives[2]); // C = (XY) * w
+  StructureTensor[2] = _convolveGaussian(_Derivatives[0].mul(_Derivatives[1])); // C = (XY) * w
 
   _Response = _computeResponse(StructureTensor);
 }
@@ -102,13 +102,12 @@ cv::Mat HarrisDetector::_convolveGaussian(const cv::Mat & Img)
 /// </summary>
 /// <param name="Img">The img.</param>
 /// <returns>std::array</returns>
-std::array<cv::Mat, 3> HarrisDetector::_computeDerivatives(const cv::Mat & Img)
+std::array<cv::Mat, 2> HarrisDetector::_computeDerivatives(const cv::Mat & Img)
 {
-  std::array<cv::Mat, 3> Ret;
+  std::array<cv::Mat, 2> Ret;
 
   Ret[0] = _convolveKernel(Img, (cv::Mat_<float>(1, 3) << -1, 0, 1)); // X = I * (-1, 0, 1)
   Ret[1] = _convolveKernel(Img, (cv::Mat_<float>(3, 1) << -1, 0, 1)); // Y = I * (-1, 0, 1)T
-  Ret[2] = Ret[0].mul(Ret[1]); // XY
 
   return Ret;
 }
@@ -264,18 +263,16 @@ cv::Mat HarrisDetector::getResponse()
 /// </summary>
 /// <param name="raw">if set to <c>true</c> [raw].</param>
 /// <returns>std::array</returns>
-std::array<cv::Mat, 3> HarrisDetector::getDerivatives(bool raw)
+std::array<cv::Mat, 2> HarrisDetector::getDerivatives(bool raw)
 {
-  std::array<cv::Mat, 3> Ret = {
+  std::array<cv::Mat, 2> Ret = {
     _Derivatives[0].clone(),
-    _Derivatives[1].clone(),
-    _Derivatives[2].clone()
+    _Derivatives[1].clone()
   };
 
   if (!raw) {
     Ret[0].convertTo(Ret[0], _ImgOrig.type());
     Ret[1].convertTo(Ret[1], _ImgOrig.type());
-    Ret[2].convertTo(Ret[2], _ImgOrig.type());
   }
 
   return Ret;

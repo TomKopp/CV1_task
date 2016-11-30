@@ -34,7 +34,7 @@ auto isBetweenNegOneAndOne = between(-1.0f, 1.0f);
 int main(int argc, char** argv) {
   cv::Mat ImgOrig,
     ImgHarris;
-  
+
 
   // Check if image path is supplied as argument
   if (argc < 2) {
@@ -60,13 +60,12 @@ int main(int argc, char** argv) {
   // Display Images
   cv::imshow("Original", ImgOrig);
   //cv::imshow("Sobel", Utils::convolveMatWithSobel(ImgResult));
-  
-  
 
-  std::array<cv::Mat, 3> Derivatives = Harris.getDerivatives();
+
+
+  std::array<cv::Mat, 2> Derivatives = Harris.getDerivatives();
   cv::imshow("DerivatesIx", Derivatives[0]);
   cv::imshow("DerivatesIy", Derivatives[1]);
-  cv::imshow("DerivatesIxy", Derivatives[2]);
   cv::imshow("Harris", Harris.filterCorners(greaterThan(10000)));
   //std::cout << Harris.getResponse() << std::endl;
 
