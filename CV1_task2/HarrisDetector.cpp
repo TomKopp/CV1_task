@@ -151,9 +151,11 @@ cv::Mat HarrisDetector::_computeResponse(const std::array<cv::Mat, 3>& Structure
 }
 
 /// <summary>
-/// Performs the non-maxima suppression on a given 3x3 neighboorhood.
+/// Performs the non-maxima suppression on a 3x3 neighboorhood.
 /// </summary>
-/// <remarks>https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel</remarks>
+/// <remarks>
+/// https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel
+/// </remarks>
 /// <param name="Response">The response.</param>
 /// <returns>cv::Mat</returns>
 cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
@@ -243,7 +245,9 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
 /// Performs the non-maxima suppression on a given neighboorhood size.
 /// Not implemented yet!
 /// </summary>
-/// <remarks>https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel</remarks>
+/// <remarks>
+/// https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel
+/// </remarks>
 /// <param name="Response">The response.</param>
 /// <param name="Neighborhood">The neighborhood defined as (2n + 1)×(2n + 1). Give n</param>
 /// <returns>cv::Mat</returns>
