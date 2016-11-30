@@ -43,15 +43,15 @@ public:
 
     for (int r = 0; r < Ret.rows; r++) {
       for (int c = 0; c < Ret.cols; c++) {
-        //if (!cmpFnc(_Response.at<float>(r, c))) {
-        //  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
-        //}
-        if (cmpFnc(_Response.at<float>(r, c))) {
-          Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
-        }
-        else {
+        if (!cmpFnc(_Response.at<float>(r, c))) {
           Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
         }
+        //if (cmpFnc(_Response.at<float>(r, c))) {
+        //  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
+        //}
+        //else {
+        //  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
+        //}
       }
     }
 
@@ -63,7 +63,7 @@ public:
   /// Filters the corners of the Response after non-maxima suppression.
   /// </summary>
   /// <param name="cmpFnc">The compare function.</param>
-  /// <returns></returns>
+  /// <returns>cv::Mat</returns>
   template<typename Functor> inline
     cv::Mat filterCorners(const Functor& cmpFnc)
   {

@@ -238,6 +238,7 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
 
 /// <summary>
 /// Performs the non-maxima suppression on a given neighboorhood size.
+/// Not implemented yet!
 /// </summary>
 /// <remarks>https://www.academia.edu/5524439/Non-maximum_Suppression_Using_fewer_than_Two_Comparisons_per_Pixel</remarks>
 /// <param name="Response">The response.</param>
