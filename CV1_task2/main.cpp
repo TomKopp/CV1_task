@@ -10,19 +10,19 @@
 
 
 auto lowerThan = [](const float x) {
-  return [&](const float y)->bool {
+  return [x](const float y)->bool {
     return y < x;
   };
 };
 
 auto greaterThan = [](const float x) {
-  return [&](const float y)->bool {
+  return [x](const float y)->bool {
     return y > x;
   };
 };
 
 auto between = [](const float x, const float z) {
-  return [&](const float y)->bool {
+  return [x, z](const float y)->bool {
     return (x < y) && (y < z);
   };
 };
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
   }
 
   // Read image and check if successful
-  ImgOrig = cv::imread(argv[1]);
+	ImgOrig = cv::imread(argv[1]);
   if (ImgOrig.empty()) {
     std::cout << "Could not open or find the image." << std::endl;
     return -1;
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   std::array<cv::Mat, 2> Derivatives = Harris.getDerivatives();
   cv::imshow("DerivatesIx", Derivatives[0]);
   cv::imshow("DerivatesIy", Derivatives[1]);
-  cv::imshow("Harris", Harris.filterCorners(greaterThan(10000)));
+  cv::imshow("Harris", Harris.filterCorners(greaterThan(1000000.0f)));
   //std::cout << Harris.getResponse() << std::endl;
 
   cv::waitKey();
