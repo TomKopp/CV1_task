@@ -165,18 +165,18 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
     c, /// <value>column index</value>
     r, /// <value>row index</value>
     h = Response.rows,
-    w = Response.cols,
+    w = Response.cols - 1,
     cur = 0,
     next = 1;
 
-  bool(*skip)[2] = new bool[w][2]; // skanline mask
-  for (int i = 0; i < w; ++i) { // initialize mask
+  bool(*skip)[2] = new bool[Response.cols][2]; // skanline mask
+  for (int i = 0; i < Response.cols; ++i) { // initialize mask
     skip[i][0] = false;
     skip[i][1] = false;
   }
 
-  for (r = 2; r < h - 1; ++r) {
-    c = 2; // set c (column index) every start of the loop to two
+  for (r = 1; r < h - 1; ++r) {
+    c = 1; // set c (column index) every start of the loop to two
 
     while (c < (w - 1)) {
       if (skip[c][cur]) { // skip current pixel
@@ -232,7 +232,7 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
 
     // swap skip mask indices
     std::swap(cur, next);
-    for (int i = 0; i < w; ++i) { // reset next scanline mask
+    for (int i = 0; i < Response.cols; ++i) { // reset next scanline mask
       skip[i][next] = false;
     }
   }
