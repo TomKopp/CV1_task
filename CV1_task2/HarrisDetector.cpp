@@ -164,7 +164,7 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
   int
     c, /// <value>column index</value>
     r, /// <value>row index</value>
-    h = Response.rows,
+    h = Response.rows - 1,
     w = Response.cols - 1,
     cur = 0,
     next = 1;
@@ -204,22 +204,13 @@ cv::Mat HarrisDetector::_nonMaximaSuppression(const cv::Mat & Response)
       /********/
 
       // compare to 3 future then 3 past neighbors
-      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c - 1)) {
-        ++c;
-        continue;
-      }
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c - 1)) { ++c; continue; }
       skip[c - 1][next] = true;
 
-      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c)) {
-        ++c;
-        continue;
-      }
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c)) { ++c; continue; }
       skip[c][next] = true;
 
-      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c + 1)) {
-        ++c;
-        continue;
-      }
+      if (Response.at<float>(r, c) <= Response.at<float>(r + 1, c + 1)) { ++c; continue; }
       skip[c + 1][next] = true;
 
       if (Response.at<float>(r, c) <= Response.at<float>(r - 1, c - 1)) { ++c; continue; }
