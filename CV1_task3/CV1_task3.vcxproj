@@ -172,6 +172,7 @@
     <ClCompile Include="saves.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HarrisDetector.h" />
     <ClInclude Include="ps.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
