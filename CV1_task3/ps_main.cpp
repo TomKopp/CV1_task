@@ -1,4 +1,4 @@
-﻿// standard stuff
+// standard stuff
 #include <stdio.h>
 #include <iostream>
 using namespace std;
@@ -17,14 +17,14 @@ using namespace cv;
 #include "ps.h"
 
 int main(int argc, char **argv) {
-	if (argc != 3) {
+	if (argc < 3) {
 		cerr << endl << "Usage: ps <left image> <right image>" << endl << endl;
 		exit(0);
 	}
 
 	// read images
 	Mat imgl = imread(argv[1]);
-	if (!(imgl.data)) {
+	if (imgl.empty()) {
 		cerr << endl << "Can not read " << argv[1] << endl;
 		exit(0);
 	}
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	int widthl = imgl.cols;
 
 	Mat imgr = imread(argv[2]);
-	if (!(imgr.data)) {
+	if (imgr.empty()) {
 		cerr << endl << "Can not read " << argv[2] << endl;
 		exit(0);
 	}
@@ -41,26 +41,34 @@ int main(int argc, char **argv) {
 
 	// faust regel for window sizes :-)
 	int wsize_sum = (int)((widthl + widthr + heightl + heightr) / 1300. + 0.5);
-	if (wsize_sum < 1) wsize_sum = 1;
-	int wsize_loc = (int)((widthl + widthr + heightl + heightr) / 500. + 0.5);
-	if (wsize_loc < 2) wsize_loc = 2;
+	if (wsize_sum < 1) {
+		wsize_sum = 1;
+	}
+	int wsize_local_maxima = (int)((widthl + widthr + heightl + heightr) / 500. + 0.5);
+	if (wsize_local_maxima < 2) {
+		wsize_local_maxima = 2;
+	}
 	int wsize_match = (int)((widthl + widthr + heightl + heightr) / 90. + 0.5);
-	if (wsize_match < 5) wsize_match = 5;
-	if (wsize_match > 40) wsize_match = 40;
+	if (wsize_match < 5) {
+		wsize_match = 5;
+	}
+	if (wsize_match > 40) {
+		wsize_match = 40;
+	}
 
 	cerr << endl << "Images loaded. wsize_sum=" << wsize_sum
-		<< ", wsize_loc=" << wsize_loc
+		<< ", wsize_loc=" << wsize_local_maxima
 		<< ", wsize_match=" << wsize_match;
 
 	// Harris detector
 	cerr << endl << "Start Harris detector ...";
-	vector<KEYPOINT> pointsl = harris(heightl, widthl, imgl.ptr(0), wsize_sum, wsize_loc, "L");
+	vector<KEYPOINT> pointsl = harris(heightl, widthl, imgl.ptr(0), wsize_sum, wsize_local_maxima, "L");
 	cerr << endl << pointsl.size() << " keypoints in the left image";
 #ifdef SAVE_ALL
 	save_keypoints_as_image(heightl, widthl, imgl.ptr(0), pointsl, "keypointsL.png");
 #endif
 
-	vector<KEYPOINT> pointsr = harris(heightr, widthr, imgr.ptr(0), wsize_sum, wsize_loc, "R");
+	vector<KEYPOINT> pointsr = harris(heightr, widthr, imgr.ptr(0), wsize_sum, wsize_local_maxima, "R");
 	cerr << endl << pointsr.size() << " keypoints in the right image";
 #ifdef SAVE_ALL
 	save_keypoints_as_image(heightr, widthr, imgr.ptr(0), pointsr, "keypointsR.png");
