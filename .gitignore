@@ -240,3 +240,25 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+warpedR.png
+warpedL.png
+panorama.png
+mR.png
+mL.png
+matches.png
+keypointsR.png
+keypointsL.png
+eR.png
+eL.png
+cR.png
+cL.png
+ccR.png
+ccL.png
+bR.png
+bL.png
+bbR.png
+bbL.png
+aR.png
+aL.png
+aaR.png
+aaL.png
