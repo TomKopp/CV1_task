@@ -165,6 +165,7 @@
     <ClCompile Include="harris.cpp" />
     <ClCompile Include="homographies.cpp" />
     <ClCompile Include="local_maxima.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="mean.cpp" />
     <ClCompile Include="ps_main.cpp" />

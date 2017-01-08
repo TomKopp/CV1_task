@@ -7,8 +7,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-using namespace std;
-using namespace cv;
+//using namespace std;
+//using namespace cv;
 
 // save all intermediate results as images
 #define SAVE_ALL
@@ -29,27 +29,46 @@ typedef struct {
 	double value;
 } MATCH;
 
-vector<KEYPOINT> harris(int height, int width, unsigned char *img,
-	int wsize_sum, int wsize_loc, const char *name);
-vector<MATCH> matching(int heightl, int widthl, unsigned char *imgl,
+std::vector<KEYPOINT> harris(
+	int height, int width, unsigned char *img,
+	int wsize_sum, int wsize_loc, const char *name
+);
+
+std::vector<MATCH> matching(
+	int heightl, int widthl, unsigned char *imgl,
 	int heightr, int widthr, unsigned char *imgr,
-	vector<KEYPOINT>pointsl, vector<KEYPOINT>pointsr, int wsize);
+	std::vector<KEYPOINT>pointsl, std::vector<KEYPOINT>pointsr, int wsize
+);
+
 void mean_filter(int height, int width, double *a, int wsize);
-vector<KEYPOINT> local_maxima(int height, int width, double *e, int wsize, const char *name);
+
+std::vector<KEYPOINT> local_maxima(int height, int width, double *e, int wsize, const char *name);
+
 void save_double_as_image(int height, int width, double *array, const char *name);
-void save_matches_as_image(int heightl, int widthl, unsigned char *imgl,
+
+void save_matches_as_image(
+	int heightl, int widthl, unsigned char *imgl,
 	int heightr, int widthr, unsigned char *imgr,
-	vector<MATCH> matches, const char *name);
-void save_keypoints_as_image(int height, int width, unsigned char *img,
-	vector<KEYPOINT> points, const char *name);
-inline void ht(double x0, double y0, Mat &H, double *x, double *y) {
-	Mat point1 = (Mat_<double>(3, 1) << x0, y0, 1.);
-	Mat point2 = H*point1;
+	std::vector<MATCH> matches, const char *name
+);
+
+void save_keypoints_as_image(
+	int height, int width, unsigned char *img,
+	std::vector<KEYPOINT> points, const char *name
+);
+
+inline void ht(double x0, double y0, cv::Mat &H, double *x, double *y) {
+	cv::Mat point1 = (cv::Mat_<double>(3, 1) << x0, y0, 1.);
+	cv::Mat point2 = H*point1;
 	*x = point2.at<double>(0, 0) / point2.at<double>(2, 0);
 	*y = point2.at<double>(1, 0) / point2.at<double>(2, 0);
 }
-void render(int heightl, int widthl, Mat &imgl,
-	int heightr, int widthr, Mat &imgr,
-	Mat Hl, Mat Hr, const char *name);
-void my_homographies(vector<MATCH> matches, Mat &Hl, Mat &Hr);
+
+void render(
+	int heightl, int widthl, cv::Mat &imgl,
+	int heightr, int widthr, cv::Mat &imgr,
+	cv::Mat Hl, cv::Mat Hr, const char *name
+);
+
+void my_homographies(std::vector<MATCH> matches, cv::Mat &Hl, cv::Mat &Hr);
 #endif

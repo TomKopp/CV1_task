@@ -30,13 +30,16 @@
     <ClCompile Include="mean.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ps_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="saves.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ps_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

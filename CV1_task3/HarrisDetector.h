@@ -310,12 +310,6 @@ public:
 				if (!cmpFnc(_Response.at<float>(r, c))) {
 					Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
 				}
-				//if (cmpFnc(_Response.at<float>(r, c))) {
-				//  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 255);
-				//}
-				//else {
-				//  Ret.at<cv::Vec3f>(r, c) = cv::Vec3f(0, 0, 0);
-				//}
 			}
 		}
 
