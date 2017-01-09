@@ -1,5 +1,4 @@
-#ifndef __PANST
-#define __PANST
+#pragma once
 
 #include <vector>
 
@@ -71,4 +70,3 @@ void render(
 );
 
 void my_homographies(std::vector<MATCH> matches, cv::Mat &Hl, cv::Mat &Hr);
-#endif

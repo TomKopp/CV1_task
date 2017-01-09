@@ -5,6 +5,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "ps.h"
+
 /// <summary>
 /// A Combined Corner And Edge Detector - Harris & Stephens
 /// </summary>
@@ -36,18 +38,6 @@ private:
 	cv::Mat _ImgOrig;
 	cv::Mat _Response;
 	std::array<cv::Mat, 2> _Derivatives;
-
-public:
-	/// <summary>
-	///
-	/// </summary>
-	struct KEYPOINT {
-		double x;
-		double y;
-		double value;
-	};
-
-	typedef std::vector<HarrisDetector::KEYPOINT> KEYPOINTS;
 
 private:
 	/// <summary>
@@ -346,10 +336,11 @@ public:
 	/// <param name="cmpFunc">The compare function.</param>
 	/// <returns></returns>
 	template<typename Functor> inline
-		KEYPOINTS filterKeyPoints(const Functor& cmpFnc)
+		std::vector<KEYPOINT> filterKeyPoints(const Functor& cmpFnc)
 	{
-		KEYPOINTS Ret;
+		std::vector<KEYPOINT> Tmp, Ret;
 		cv::Mat NMS = _nonMaximaSuppression(_Response);
+		double avg = 0.0;
 
 		for (int r = 0; r < NMS.rows; r++) {
 			for (int c = 0; c < NMS.cols; c++) {
@@ -358,8 +349,17 @@ public:
 					blub.x = c;
 					blub.y = r;
 					blub.value = NMS.at<float>(r, c);
-					Ret.push_back(blub);
+					Tmp.push_back(blub);
+					avg += blub.value;
 				}
+			}
+		}
+
+		avg /= Tmp.size();
+
+		for each (KEYPOINT elem in Tmp) {
+			if (elem.value > avg) {
+				Ret.push_back(elem);
 			}
 		}
 
