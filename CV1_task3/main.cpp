@@ -57,11 +57,12 @@ int main(int argc, char** argv) {
 
 	// Harris detector
 	std::cout << "Start Harris detector ..." << std::endl;
-	std::vector<KEYPOINT> pointsl = harris(heightl, widthl, imgl.ptr(0), wsize_sum, wsize_local_maxima, "L");
-	//std::vector<KEYPOINT> pointsl = HarrisDetector(imgl).filterKeyPoints(greaterThan(1000));
+	//std::vector<KEYPOINT> pointsl = harris(heightl, widthl, imgl.ptr(0), wsize_sum, wsize_local_maxima, "L");
+	std::vector<KEYPOINT> pointsl = HarrisDetector(imgl).filterKeyPoints(greaterThan(100000));
 	std::cout << pointsl.size() << " keypoints in the left image" << std::endl;
 
-	std::vector<KEYPOINT> pointsr = harris(heightr, widthr, imgr.ptr(0), wsize_sum, wsize_local_maxima, "R");
+	//std::vector<KEYPOINT> pointsr = harris(heightr, widthr, imgr.ptr(0), wsize_sum, wsize_local_maxima, "R");
+	std::vector<KEYPOINT> pointsr = HarrisDetector(imgr).filterKeyPoints(greaterThan(100000));
 	std::cout << pointsr.size() << " keypoints in the right image" << std::endl;
 
 
@@ -107,6 +108,9 @@ int main(int argc, char** argv) {
 	std::cout << "Start matching ..." << std::endl;
 	std::vector<MATCH> matches = matching(heightl, widthl, imgl.ptr(0), heightr, widthr, imgr.ptr(0), pointsl, pointsr, wsize_match);
 	std::cout << matches.size() << " matching pairs found" << std::endl;
+	#ifdef SAVE_ALL
+		save_matches_as_image(heightl, widthl, imgl.ptr(0), heightr, widthr, imgr.ptr(0), matches, "matches.png");
+	#endif
 
 	// homography -- OpenCV implementation
 	std::cout << "Start standard RANSAC ..." << std::endl;
