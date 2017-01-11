@@ -6,6 +6,7 @@
 #include <opencv2/calib3d/calib3d.hpp>
 
 #include "HarrisDetector.h"
+#include "Matching.h"
 #include "ps.h"
 
 auto greaterThan = [](const float x) {
@@ -67,6 +68,7 @@ int main(int argc, char** argv) {
 
 	// Matching
 	std::cout << "Start matching ..." << std::endl;
+	Matching(imgl, imgr, pointsl, pointsr, wsize_match);
 	std::vector<MATCH> matches = matching(heightl, widthl, imgl.ptr(0), heightr, widthr, imgr.ptr(0), pointsl, pointsr, wsize_match);
 	std::cout << matches.size() << " matching pairs found" << std::endl;
 	#ifdef SAVE_ALL
