@@ -66,6 +66,45 @@ int main(int argc, char** argv) {
 	std::vector<KEYPOINT> pointsr = HarrisDetector(imgr).filterKeyPoints(greaterThan(100000));
 	std::cout << pointsr.size() << " keypoints in the right image" << std::endl;
 
+
+	//*****************************************************************************************************
+	cv::Mat GaussianKernel = (cv::Mat_<float>(5, 5) <<
+		1, 4, 7, 4, 1,
+		4, 16, 26, 16, 4,
+		7, 16, 41, 16, 7,
+		4, 16, 26, 16, 4,
+		1, 4, 7, 4, 1);
+	GaussianKernel = GaussianKernel / 273.0;
+	cv::Mat Tmp(imgl.size() / 2, imgl.type());
+
+	for (size_t r = 0; r < Tmp.rows; r++) {
+		for (size_t c = 0; c < Tmp.cols; c++) {
+			cv::Mat onePixelSourceROI(imgl, cv::Rect(cv::Point(c * 2, r * 2), cv::Size(1, 1)));
+			cv::Mat baum;
+			cv::filter2D(onePixelSourceROI, baum, imgl.type(), GaussianKernel, cv::Point(-1, -1), 0, cv::BORDER_CONSTANT);
+			Tmp.at<cv::Vec3b>(r, c) = baum.at<cv::Vec3b>(0,0);
+		}
+	}
+
+	cv::Mat GausUp = GaussianKernel.clone();
+	GausUp *= 4;
+	cv::Mat Stretch(Tmp.size() * 2, imgl.type(), cv::Scalar::all(0));
+	for (size_t r = 0; r < Tmp.rows; r++) {
+		for (size_t c = 0; c < Tmp.cols; c++) {
+			Stretch.at<cv::Vec3b>(r * 2, c * 2) = Tmp.at<cv::Vec3b>(r, c);
+		}
+	}
+	cv::filter2D(Stretch, Stretch, imgl.type(), GausUp, cv::Point(-1, -1), 0, cv::BORDER_CONSTANT);
+	//cv::pyrUp(Tmp, Stretch, cv::Size(Tmp.size() * 2));
+
+	cv::imshow("Tmp", Tmp);
+	cv::imshow("Stretch", Stretch);
+	cv::waitKey(0);
+
+
+	//*****************************************************************************************************
+
+
 	// Matching
 	std::cout << "Start matching ..." << std::endl;
 	Matching(imgl, imgr, pointsl, pointsr, wsize_match);
