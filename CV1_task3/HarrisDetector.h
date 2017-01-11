@@ -111,7 +111,7 @@ private:
 			B = StructureTensor[1],
 			C = StructureTensor[2];
 		float
-			k = 0.04f, // empirical constant: k = 0.04 - 0.06
+			k = 0.06f, // empirical constant: k = 0.04 - 0.06
 			det, // Det = AB - C^2
 			tr; // Tr = A + B
 
@@ -355,14 +355,14 @@ public:
 			}
 		}
 
-		avg /= Tmp.size();
+		//avg /= Tmp.size();
 
-		for each (KEYPOINT elem in Tmp) {
-			if (elem.value > avg) {
-				Ret.push_back(elem);
-			}
-		}
+		//for each (KEYPOINT elem in Tmp) {
+		//	if (elem.value > avg) {
+		//		Ret.push_back(elem);
+		//	}
+		//}
 
-		return Ret;
+		return Tmp;
 	}
 };
