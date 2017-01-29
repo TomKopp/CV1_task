@@ -23,7 +23,7 @@ static std::string leftPad(std::string & str, const size_t length, const char pa
 * \param      engine pseudo random number engine to be used for sampling
 * \return     a vector of resampled particles; its length is 'numberOfParticles'
 */
-std::vector<Particle> resampleParticles(std::vector<Particle>& particles, int numberOfParticles, std::mt19937 engine)
+std::vector<Particle> resampleParticles(std::vector<Particle>& particles, size_t numberOfParticles, std::mt19937 engine)
 {
 	// IMPLEMENT
 	return particles;
@@ -55,7 +55,7 @@ void processFrame(cv::Mat& frame, cv::Mat& frameLab, std::vector<Particle>& part
 
 		//calculate mean particle using the weights
 		//IMPLEMENT - DONE
-		for (Particle elem : particles) {
+		for (Particle & elem : particles) {
 			elem.weight /= meanP.weight;
 			meanP.x += elem.weight * elem.x;
 			meanP.y += elem.weight * elem.y;

@@ -34,18 +34,18 @@ ObservationModel::ObservationModel(cv::Mat & img, double lambda_)
 	// IMPLEMENT - DONE
 	// claculate the histogram of the given image (use calcHist function above)
 	calculateHist(img, _histogram);
-	// normalize the histogram
+	// normalize the histogram - not realy nessesary
 	//cv::normalize(_histogram, _histogram);
 	// store the histogram and lambda
 }
 
 double ObservationModel::likelihood(cv::Mat & img, Particle & p) {
-	// IMPLEMENT
-				// caluclate a histogramm for the window defined by the particle
+	// IMPLEMENT - DONE
+	// caluclate a histogramm for the window defined by the particle
 	cv::Mat histWindow;
 	calculateHist(p.getSubImg(img), histWindow);
 
-	// normalize it
+	// normalize it - not realy nessesary
 	//cv::normalize(histWindow, histWindow);
 
 	// compare it to the stored histogram using the cv::compareHist function (use the Bahttacharyya distance)
