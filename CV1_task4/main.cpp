@@ -1,9 +1,8 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <vector>
-#include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include <map>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include "Particle.h"
 #include "MotionModel.h"
 #include "ObservationModel.h"
@@ -46,10 +45,6 @@ std::vector<Particle> resampleParticles(std::vector<Particle>& particles, size_t
 		if (iterator != particleList.end()) {
 			result.push_back(*(iterator->second));
 		}
-		else {
-			std::cout << "nope" << std::endl;
-		}
-
 	}
 
 	return result;
