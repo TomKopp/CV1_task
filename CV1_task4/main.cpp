@@ -8,7 +8,13 @@
 #include "MotionModel.h"
 #include "ObservationModel.h"
 
-#include <iostream>
+/*
+leftPad
+https://github.com/kamyu104/LintCode/blob/master/C%2B%2B/left-pad.cpp
+*/
+static std::string leftPad(std::string & str, const size_t length, const char padChar = ' ') {
+	return std::string(std::max((size_t)0, length - str.length()), padChar).append(str);
+}
 
 /**
 * \brief  Resample particles using their weights
@@ -75,7 +81,7 @@ void processFrame(cv::Mat& frame, cv::Mat& frameLab, std::vector<Particle>& part
 
 		//calculate mean particle using the weights
 		//IMPLEMENT - DONE
-		for (Particle elem : particles) {
+		for (Particle & elem : particles) {
 			elem.weight /= meanP.weight;
 			meanP.x += elem.weight * elem.x;
 			meanP.y += elem.weight * elem.y;
@@ -155,7 +161,8 @@ void trackSequence(std::string seq)
 	for (int i = 0; i < 500; i++)
 	{
 		cv::Mat img;
-		img = cv::imread(seq + "/" + intToString(i, 3) + ".jpg");
+		//img = cv::imread(seq + "/" + intToString(i, 3) + ".jpg");
+		img = cv::imread(seq + "/" + leftPad(std::to_string(i), 3, '0') + ".jpg");
 		rgbs.push_back(img);
 	}
 
