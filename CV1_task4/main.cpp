@@ -8,6 +8,7 @@
 #include "MotionModel.h"
 #include "ObservationModel.h"
 
+#include <iostream>
 
 /**
 * \brief  Resample particles using their weights
@@ -16,10 +17,36 @@
 * \param      engine pseudo random number engine to be used for sampling
 * \return     a vector of resampled particles; its length is 'numberOfParticles'
 */
-std::vector<Particle> resampleParticles(std::vector<Particle>& particles, int numberOfParticles, std::mt19937 engine)
+std::vector<Particle> resampleParticles(std::vector<Particle>& particles, size_t numberOfParticles, std::mt19937 engine)
 {
-	// IMPLEMENT
-	return particles;
+	// IMPLEMENT - DONE
+	std::map<double, Particle*> particleList;
+	std::vector<Particle> result;
+	std::uniform_real_distribution<> distribution(0, 1);
+	double randomVal = 0;
+	double weightSum = 0;
+
+	//fill sorted list
+	for (Particle & currentParticle : particles) {
+		weightSum += currentParticle.weight;
+		particleList.insert(std::pair<double, Particle*>(weightSum, &currentParticle));
+	}
+
+	//choose random particles from weighted List
+	for (size_t i = 0; i < numberOfParticles; i++) {
+		randomVal = distribution(engine);
+		//find particle for randomVal
+		auto iterator = particleList.upper_bound(randomVal);
+		if (iterator != particleList.end()) {
+			result.push_back(*(iterator->second));
+		}
+		else {
+			std::cout << "nope" << std::endl;
+		}
+
+	}
+
+	return result;
 }
 
 /**
