@@ -145,7 +145,7 @@ void trackSequence(std::string seq)
 	// this vector will hold the particles
 	std::vector <Particle> particles;
 	int numOfP = 250;	// The number of particles to use
-	MotionModel mm(10, 2); // init the motion model
+	MotionModel mm(20, 2); // init the motion model
 	ObservationModel* om = NULL;	// we initialize the observation model with NULL beacause we are not tracking yet.
 
 	std::random_device rd; // !!!!!!! DO NOT USE RANDOM DEVICE TO GET REPEATABLE RESULTS FROM ENGINE
